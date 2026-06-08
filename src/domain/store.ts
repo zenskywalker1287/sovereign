@@ -135,7 +135,9 @@ export const useStore = create<SovereignState>()(
         stats: s.stats,
         voltageLog: s.voltageLog,
       }),
-      version: 1,
+      // Bumping `version` discards any older persisted state — anyone loading the
+      // app picks up fresh zeros. Bump again for any future state-shape change.
+      version: 2,
     }
   )
 );

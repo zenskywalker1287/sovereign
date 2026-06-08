@@ -50,15 +50,16 @@ export function getArchetype(slug: ArchetypeSlug): Archetype {
   return DEFAULT_ARCHETYPES.find(a => a.slug === slug) ?? DEFAULT_ARCHETYPES[0];
 }
 
-/** Level curve: how much CUMULATIVE XP is needed to be at level n. */
+/** Level curve: cumulative XP needed to be at level n.
+ *  Lvl 0 = 0 XP (you start here). Lvl 1 = 100 XP. Lvl 47 ≈ 33k XP. */
 export function xpForLevel(n: number): number {
-  if (n <= 1) return 0;
-  return Math.round(100 * Math.pow(n - 1, 1.6));
+  if (n <= 0) return 0;
+  return Math.round(100 * Math.pow(n, 1.6));
 }
 
 /** Inverse — given total XP, return level + how-much-into-this-level. */
 export function levelForXp(xp: number): { level: number; xpInLevel: number; xpToNext: number } {
-  let level = 1;
+  let level = 0;
   while (xpForLevel(level + 1) <= xp) level++;
   const base = xpForLevel(level);
   const next = xpForLevel(level + 1);

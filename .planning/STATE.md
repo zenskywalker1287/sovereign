@@ -1,6 +1,6 @@
 # SOVEREIGN — STATE
 
-**Phase:** P1 (Lockable + Persistent + Real Engine) — in progress
+**Phase:** P2 (Mental Diet + Vault Surfaces) — shipped
 **Last deploy:** https://zenskywalker1287.github.io/sovereign/ (2026-05-30, commit `7388a4b`)
 **Current cursor:** building P1 autonomously per ROADMAP.md, all 9 P1 tasks in one push, single commit at the end.
 

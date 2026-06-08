@@ -9,16 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WatchRouteImport } from './routes/watch'
+import { Route as SurpriseRouteImport } from './routes/surprise'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as MissionsRouteImport } from './routes/missions'
+import { Route as JournalRouteImport } from './routes/journal'
+import { Route as DietRouteImport } from './routes/diet'
 import { Route as BrainRouteImport } from './routes/brain'
 import { Route as ArchetypesRouteImport } from './routes/archetypes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NoteSplatRouteImport } from './routes/note.$'
 import { Route as BrainHistoryRouteImport } from './routes/brain.history'
 import { Route as BrainStudioLaneRouteImport } from './routes/brain.studio.$lane'
 import { Route as BrainDrillIdRouteImport } from './routes/brain.drill.$id'
 
+const WatchRoute = WatchRouteImport.update({
+  id: '/watch',
+  path: '/watch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SurpriseRoute = SurpriseRouteImport.update({
+  id: '/surprise',
+  path: '/surprise',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -34,6 +49,16 @@ const MissionsRoute = MissionsRouteImport.update({
   path: '/missions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DietRoute = DietRouteImport.update({
+  id: '/diet',
+  path: '/diet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrainRoute = BrainRouteImport.update({
   id: '/brain',
   path: '/brain',
@@ -47,6 +72,11 @@ const ArchetypesRoute = ArchetypesRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NoteSplatRoute = NoteSplatRouteImport.update({
+  id: '/note/$',
+  path: '/note/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrainHistoryRoute = BrainHistoryRouteImport.update({
@@ -69,10 +99,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/archetypes': typeof ArchetypesRoute
   '/brain': typeof BrainRouteWithChildren
+  '/diet': typeof DietRoute
+  '/journal': typeof JournalRoute
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/surprise': typeof SurpriseRoute
+  '/watch': typeof WatchRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
 }
@@ -80,10 +115,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/archetypes': typeof ArchetypesRoute
   '/brain': typeof BrainRouteWithChildren
+  '/diet': typeof DietRoute
+  '/journal': typeof JournalRoute
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/surprise': typeof SurpriseRoute
+  '/watch': typeof WatchRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
 }
@@ -92,10 +132,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/archetypes': typeof ArchetypesRoute
   '/brain': typeof BrainRouteWithChildren
+  '/diet': typeof DietRoute
+  '/journal': typeof JournalRoute
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/surprise': typeof SurpriseRoute
+  '/watch': typeof WatchRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
 }
@@ -105,10 +150,15 @@ export interface FileRouteTypes {
     | '/'
     | '/archetypes'
     | '/brain'
+    | '/diet'
+    | '/journal'
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/surprise'
+    | '/watch'
     | '/brain/history'
+    | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
   fileRoutesByTo: FileRoutesByTo
@@ -116,10 +166,15 @@ export interface FileRouteTypes {
     | '/'
     | '/archetypes'
     | '/brain'
+    | '/diet'
+    | '/journal'
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/surprise'
+    | '/watch'
     | '/brain/history'
+    | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
   id:
@@ -127,10 +182,15 @@ export interface FileRouteTypes {
     | '/'
     | '/archetypes'
     | '/brain'
+    | '/diet'
+    | '/journal'
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/surprise'
+    | '/watch'
     | '/brain/history'
+    | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
   fileRoutesById: FileRoutesById
@@ -139,13 +199,32 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchetypesRoute: typeof ArchetypesRoute
   BrainRoute: typeof BrainRouteWithChildren
+  DietRoute: typeof DietRoute
+  JournalRoute: typeof JournalRoute
   MissionsRoute: typeof MissionsRoute
   ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
+  SurpriseRoute: typeof SurpriseRoute
+  WatchRoute: typeof WatchRoute
+  NoteSplatRoute: typeof NoteSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/watch': {
+      id: '/watch'
+      path: '/watch'
+      fullPath: '/watch'
+      preLoaderRoute: typeof WatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/surprise': {
+      id: '/surprise'
+      path: '/surprise'
+      fullPath: '/surprise'
+      preLoaderRoute: typeof SurpriseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -167,6 +246,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MissionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diet': {
+      id: '/diet'
+      path: '/diet'
+      fullPath: '/diet'
+      preLoaderRoute: typeof DietRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/brain': {
       id: '/brain'
       path: '/brain'
@@ -186,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/note/$': {
+      id: '/note/$'
+      path: '/note/$'
+      fullPath: '/note/$'
+      preLoaderRoute: typeof NoteSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brain/history': {
@@ -230,9 +330,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchetypesRoute: ArchetypesRoute,
   BrainRoute: BrainRouteWithChildren,
+  DietRoute: DietRoute,
+  JournalRoute: JournalRoute,
   MissionsRoute: MissionsRoute,
   ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
+  SurpriseRoute: SurpriseRoute,
+  WatchRoute: WatchRoute,
+  NoteSplatRoute: NoteSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

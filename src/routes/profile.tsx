@@ -57,8 +57,8 @@ function Profile() {
       </section>
 
       <ListGroup header="Journal">
-        <Row leading={<Badge color="var(--orange)" icon="flame" />}    title="Today" subtitle="Tap to write" chevron onClick={() => {}} />
-        <Row leading={<Badge color="var(--gray)"   icon="doc-text" />} title="Past Entries" subtitle="Coming in P2" chevron onClick={() => {}} />
+        <Link to="/journal"><Row leading={<Badge color="var(--orange)" icon="pencil" />}  title="Today" subtitle="Tap to write" chevron /></Link>
+        <Row leading={<Badge color="var(--gray)"   icon="doc-text" />} title="Past Entries" subtitle="Saved in vault · browse via Brain" chevron onClick={() => {}} />
       </ListGroup>
 
       <ListGroup header="Voltage Log">

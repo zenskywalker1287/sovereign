@@ -80,17 +80,36 @@ function Home() {
         /></Link>
       </ListGroup>
 
-      <ListGroup header="Mental Diet" footer="Coming next: Write / Study / Watch / Think generated daily">
-        <Row leading={<IconBadge name="pencil" color="var(--pink)" />}  title="Write" subtitle="Long-form prompt" chevron onClick={() => {}} />
-        <Row leading={<IconBadge name="book"   color="var(--indigo)" />} title="Study" subtitle="Vault deep-read"  chevron onClick={() => {}} />
-        <Row leading={<IconBadge name="sparkles" color="var(--teal)" />} title="Watch" subtitle="YouTube link"     chevron onClick={() => {}} />
-        <Row leading={<IconBadge name="brain"  color="var(--green)" />}  title="Think" subtitle="Synthesis question" chevron onClick={() => {}} />
+      <ListGroup header="Mental Diet">
+        <Link to="/diet"><Row
+          leading={<IconBadge name="sparkles" color="var(--pink)" />}
+          title="Today's diet"
+          subtitle="Write · Study · Watch · Think"
+          chevron
+        /></Link>
+        <Link to="/watch"><Row
+          leading={<IconBadge name="sparkles" color="var(--teal)" />}
+          title="Watch a video"
+          subtitle="Drop a YouTube link → structured note"
+          chevron
+        /></Link>
+      </ListGroup>
+
+      <ListGroup header="Reflection">
+        <Link to="/journal"><Row
+          leading={<IconBadge name="pencil" color="var(--orange)" />}
+          title="Today's journal"
+          subtitle="What moved · what's blocked"
+          chevron
+        /></Link>
       </ListGroup>
 
       <div className="px-4 pb-2">
-        <Button variant="tinted" fullWidth leading={<Icon name="sparkles" size={16} />}>
-          Surprise Me
-        </Button>
+        <Link to="/surprise">
+          <Button variant="tinted" fullWidth leading={<Icon name="sparkles" size={16} />}>
+            Surprise Me
+          </Button>
+        </Link>
       </div>
     </div>
   );
