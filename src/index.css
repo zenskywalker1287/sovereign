@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+/* ───────────────────────────────────────────────────────────
+   SOVEREIGN — iOS 18 Design Tokens
+   Mapped 1:1 to UIKit system colors. Light + dark auto.
+   ─────────────────────────────────────────────────────────── */
+
+@theme {
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-serif: 'New York', 'Charter', Georgia, serif;
+}
+
+:root {
+  /* Surfaces */
+  --bg: #FFFFFF;                                       /* systemBackground */
+  --bg-grouped: #F2F2F7;                               /* systemGroupedBackground */
+  --bg-grouped-secondary: #FFFFFF;                     /* secondarySystemGroupedBackground */
+  --surface: #FFFFFF;                                  /* secondarySystemBackground */
+  --surface-elevated: #F2F2F7;                         /* tertiarySystemBackground */
+
+  /* Fills */
+  --fill: rgba(120, 120, 128, 0.20);                   /* systemFill */
+  --fill-secondary: rgba(120, 120, 128, 0.16);
+  --fill-tertiary: rgba(118, 118, 128, 0.12);
+  --fill-quaternary: rgba(116, 116, 128, 0.08);
+
+  /* Labels */
+  --label: #000000;
+  --label-secondary: rgba(60, 60, 67, 0.60);
+  --label-tertiary: rgba(60, 60, 67, 0.30);
+  --label-quaternary: rgba(60, 60, 67, 0.18);
+
+  /* Separator */
+  --separator: rgba(60, 60, 67, 0.29);
+  --separator-opaque: #C6C6C8;
+
+  /* System tint */
+  --tint: #007AFF;
+  --tint-secondary: rgba(0, 122, 255, 0.10);
+
+  /* System colors */
+  --red: #FF3B30;
+  --orange: #FF9500;
+  --yellow: #FFCC00;
+  --green: #34C759;
+  --mint: #00C7BE;
+  --teal: #30B0C7;
+  --cyan: #32ADE6;
+  --blue: #007AFF;
+  --indigo: #5856D6;
+  --purple: #AF52DE;
+  --pink: #FF2D55;
+  --brown: #A2845E;
+  --gray: #8E8E93;
+
+  /* Radii (iOS card system) */
+  --r-tile: 10px;
+  --r-list: 12px;
+  --r-card: 16px;
+  --r-sheet: 20px;
+  --r-button: 999px;
+
+  /* Effects */
+  --blur-nav: saturate(180%) blur(20px);
+  --shadow-nav: 0 -0.5px 0 rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --bg-grouped: #000000;
+    --bg-grouped-secondary: #1C1C1E;
+    --surface: #1C1C1E;
+    --surface-elevated: #2C2C2E;
+
+    --fill: rgba(120, 120, 128, 0.36);
+    --fill-secondary: rgba(120, 120, 128, 0.32);
+    --fill-tertiary: rgba(118, 118, 128, 0.24);
+    --fill-quaternary: rgba(118, 118, 128, 0.18);
+
+    --label: #FFFFFF;
+    --label-secondary: rgba(235, 235, 245, 0.60);
+    --label-tertiary: rgba(235, 235, 245, 0.30);
+    --label-quaternary: rgba(235, 235, 245, 0.18);
+
+    --separator: rgba(84, 84, 88, 0.65);
+    --separator-opaque: #38383A;
+
+    --tint: #0A84FF;
+    --tint-secondary: rgba(10, 132, 255, 0.18);
+
+    --red: #FF453A;
+    --orange: #FF9F0A;
+    --yellow: #FFD60A;
+    --green: #32D74B;
+    --mint: #66D4CF;
+    --teal: #6AC4DC;
+    --cyan: #64D2FF;
+    --blue: #0A84FF;
+    --indigo: #5E5CE6;
+    --purple: #BF5AF2;
+    --pink: #FF375F;
+    --brown: #AC8E68;
+    --gray: #8E8E93;
+
+    --shadow-nav: 0 -0.5px 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Resets + base */
+* { -webkit-tap-highlight-color: transparent; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  background: var(--bg-grouped);
+  color: var(--label);
+  font-family: var(--font-body, -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: 17px;
+  line-height: 1.353;          /* iOS Body */
+  letter-spacing: -0.408px;    /* iOS Body */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+  color-scheme: light dark;
+}
+
+/* iOS type ramp utility classes */
+.ios-large-title { font-size: 34px; line-height: 41px; letter-spacing: 0.374px; font-weight: 700; }
+.ios-title-1     { font-size: 28px; line-height: 34px; letter-spacing: 0.364px; font-weight: 700; }
+.ios-title-2     { font-size: 22px; line-height: 28px; letter-spacing: 0.352px; font-weight: 700; }
+.ios-title-3     { font-size: 20px; line-height: 25px; letter-spacing: 0.380px; font-weight: 600; }
+.ios-headline    { font-size: 17px; line-height: 22px; letter-spacing: -0.408px; font-weight: 600; }
+.ios-body        { font-size: 17px; line-height: 22px; letter-spacing: -0.408px; font-weight: 400; }
+.ios-callout     { font-size: 16px; line-height: 21px; letter-spacing: -0.320px; font-weight: 400; }
+.ios-subheadline { font-size: 15px; line-height: 20px; letter-spacing: -0.240px; font-weight: 400; }
+.ios-footnote    { font-size: 13px; line-height: 18px; letter-spacing: -0.078px; font-weight: 400; }
+.ios-caption-1   { font-size: 12px; line-height: 16px; letter-spacing: 0; font-weight: 400; }
+.ios-caption-2   { font-size: 11px; line-height: 13px; letter-spacing: 0.066px; font-weight: 400; }
+
+/* iOS list / form-row pattern */
+.ios-list {
+  background: var(--bg-grouped-secondary);
+  border-radius: var(--r-list);
+  overflow: hidden;
+}
+.ios-list > * + * {
+  border-top: 0.5px solid var(--separator);
+}
+
+.ios-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  min-height: 44px;             /* HIG tap target */
+  background: transparent;
+}
+
+/* Tab bar blur */
+.tab-bar-blur {
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: var(--blur-nav);
+  -webkit-backdrop-filter: var(--blur-nav);
+  border-top: 0.5px solid var(--separator);
+}
+
+/* Nav bar blur */
+.nav-bar-blur {
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: var(--blur-nav);
+  -webkit-backdrop-filter: var(--blur-nav);
+}
+
+/* Safe area helpers (Capacitor overlays the status bar) */
+.safe-top    { padding-top:    env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-left   { padding-left:   env(safe-area-inset-left); }
+.safe-right  { padding-right:  env(safe-area-inset-right); }
+
+/* Disable text selection on UI chrome (keep it on content) */
+.no-select { -webkit-user-select: none; user-select: none; }
