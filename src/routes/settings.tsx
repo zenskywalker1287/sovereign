@@ -13,8 +13,10 @@ function Settings() {
   const [modelId, setModelId] = useState(initial.modelId);
   const [openrouterKey, setOR] = useState(initial.openrouterKey);
   const [geminiKey, setGemini] = useState(initial.geminiKey);
+  const [openaiKey, setOpenAI] = useState(initial.openaiKey);
   const [showOR, setShowOR] = useState(false);
   const [showGM, setShowGM] = useState(false);
+  const [showOA, setShowOA] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const availableModels = MODELS.filter(m => m.provider === provider);
@@ -144,6 +146,38 @@ function Settings() {
             <Button variant="tinted" size="md" onClick={() => persist({ geminiKey })}>Save</Button>
           </div>
         </Card>
+      </section>
+
+      {/* OpenAI key (Whisper) */}
+      <section className="px-4 mb-6">
+        <div className="px-4 mb-1.5 ios-footnote uppercase tracking-wide" style={{ color: 'var(--label-secondary)' }}>OpenAI API Key (Whisper transcription)</div>
+        <Card>
+          <input
+            type={showOA ? 'text' : 'password'}
+            value={openaiKey}
+            onChange={e => setOpenAI(e.target.value)}
+            placeholder="sk-proj-..."
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            className="w-full bg-transparent ios-body outline-none font-mono"
+            style={{ color: 'var(--label)' }}
+          />
+          <div className="flex items-center gap-3 mt-3">
+            <button className="ios-footnote" style={{ color: 'var(--tint)' }} onClick={() => setShowOA(s => !s)}>
+              {showOA ? 'Hide' : 'Show'}
+            </button>
+            <a className="ios-footnote" style={{ color: 'var(--tint)' }}
+               href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">
+              Get a key
+            </a>
+            <div className="flex-1" />
+            <Button variant="tinted" size="md" onClick={() => persist({ openaiKey })}>Save</Button>
+          </div>
+        </Card>
+        <div className="px-4 mt-1.5 ios-footnote" style={{ color: 'var(--label-secondary)' }}>
+          Used by the local `transcribe_url.py` script for IG/X/TikTok video transcription via Whisper. Stays on this device.
+        </div>
       </section>
 
       <ListGroup header="About">

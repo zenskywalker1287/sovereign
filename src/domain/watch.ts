@@ -15,9 +15,16 @@ export interface WatchNote {
   savedPath?: string;
 }
 
-function isYouTube(url: string): boolean {
-  return /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(url);
+function detectPlatform(url: string): 'youtube' | 'instagram' | 'twitter' | 'tiktok' | 'linkedin' | 'other' {
+  const u = url.toLowerCase();
+  if (/(youtube\.com|youtu\.be)/.test(u)) return 'youtube';
+  if (/instagram\.com/.test(u))           return 'instagram';
+  if (/twitter\.com|x\.com/.test(u))      return 'twitter';
+  if (/tiktok\.com/.test(u))              return 'tiktok';
+  if (/linkedin\.com/.test(u))            return 'linkedin';
+  return 'other';
 }
+function isYouTube(url: string): boolean { return detectPlatform(url) === 'youtube'; }
 
 const PROMPT = (url: string) => `Watch this video and produce a structured note for the user (a copywriter/agency owner).
 
@@ -33,7 +40,18 @@ Return ONLY this JSON, no prose:
 }`;
 
 export async function watchAndSummarize(url: string): Promise<WatchNote> {
-  if (!isYouTube(url)) throw new Error('Only YouTube URLs work right now (Gemini limitation).');
+  const platform = detectPlatform(url);
+  if (platform !== 'youtube') {
+    // Non-YT URLs can't be processed in-browser — Gemini's fileUri only works for YouTube.
+    // For IG reels / X videos / TikTok / anything else: instruct the user to run the local
+    // transcribe_url.py script which uses yt-dlp + Whisper. We provide the exact command.
+    throw new Error(
+      `In-app summary works for YouTube only.\n\n` +
+      `For ${platform} URLs, run this command locally (transcribes via Whisper):\n\n` +
+      `cd ~/Downloads/01_ACTIVE_HUSTLE/sovereign/scripts && python transcribe_url.py "${url}"\n\n` +
+      `Setup once: brew install yt-dlp ffmpeg && pip install -r requirements.txt`
+    );
+  }
 
   // Force Gemini — OpenRouter doesn't reliably do YouTube video input on free tier.
   let text: string;

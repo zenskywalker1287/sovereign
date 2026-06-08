@@ -78,7 +78,7 @@ export const MODELS: ModelChoice[] = [
 ];
 export const DEFAULT_MODEL_ID = MODELS[0].id;
 
-interface Settings { provider: Provider; modelId: string; openrouterKey: string; geminiKey: string; }
+interface Settings { provider: Provider; modelId: string; openrouterKey: string; geminiKey: string; openaiKey: string; }
 const SETTINGS_KEY = 'sovereign.grading.settings.v1';
 
 export function getSettings(): Settings {
@@ -98,7 +98,7 @@ export function saveSettings(s: Partial<Settings>) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(merged));
 }
 function defaults(): Settings {
-  return { provider: 'openrouter', modelId: DEFAULT_MODEL_ID, openrouterKey: '', geminiKey: '' };
+  return { provider: 'openrouter', modelId: DEFAULT_MODEL_ID, openrouterKey: '', geminiKey: '', openaiKey: '' };
 }
 
 export async function gradePiece(piece: string, drill: Drill): Promise<GradeResult> {

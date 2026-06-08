@@ -36,7 +36,7 @@ function Watch() {
             type="url"
             value={url}
             onChange={e => setUrl(e.target.value)}
-            placeholder="https://youtube.com/watch?v=..."
+            placeholder="Paste any URL — YouTube · IG reel · X video · TikTok"
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck={false}
@@ -45,7 +45,7 @@ function Watch() {
           />
           <div className="flex items-center gap-3 mt-3">
             <div className="ios-footnote" style={{ color: 'var(--label-secondary)' }}>
-              YouTube only · forces Gemini Flash
+              YouTube: free instant transcript · others: copy command, run locally
             </div>
             <div className="flex-1" />
             <Button variant="filled" onClick={submit}>
@@ -56,11 +56,26 @@ function Watch() {
       </section>
 
       {error && (
-        <div className="mx-4 mb-4 p-4 rounded-[12px] ios-callout"
-             style={{ background: 'color-mix(in srgb, var(--red) 12%, transparent)', color: 'var(--red)' }}>
-          {error}
+        <div className="mx-4 mb-4 p-4 rounded-[12px]"
+             style={{ background: 'var(--surface-elevated)', border: '0.5px solid var(--separator)' }}>
+          <div className="ios-callout whitespace-pre-wrap font-mono"
+               style={{ color: 'var(--label)' }}>
+            {error}
+          </div>
           {error.toLowerCase().includes('gemini key') && (
-            <div className="mt-2"><Link to="/settings" className="ios-headline" style={{ color: 'var(--tint)' }}>Open Settings →</Link></div>
+            <div className="mt-3"><Link to="/settings" className="ios-headline" style={{ color: 'var(--tint)' }}>Open Settings →</Link></div>
+          )}
+          {error.includes('transcribe_url.py') && (
+            <button
+              onClick={() => {
+                const cmd = error.match(/cd ~\/Downloads.*?transcribe_url\.py "[^"]+"/)?.[0];
+                if (cmd) navigator.clipboard?.writeText(cmd);
+              }}
+              className="mt-3 h-[36px] px-3 rounded-[10px] ios-footnote font-semibold active:opacity-70"
+              style={{ background: 'var(--tint-secondary)', color: 'var(--tint)' }}
+            >
+              Copy command
+            </button>
           )}
         </div>
       )}

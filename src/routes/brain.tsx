@@ -52,6 +52,15 @@ function Brain() {
         <Row leading={<TileIcon name="flame" color="var(--red)" />}    title="Gary Halbert"    subtitle="Copy · headlines + grabbers"      chevron onClick={() => {}} />
       </ListGroup>
 
+      <ListGroup header="Capture">
+        <Link to="/watch"><Row
+          leading={<TileIcon name="sparkles" color="var(--teal)" />}
+          title="Transcribe a URL"
+          subtitle="YouTube · IG reel · X video · TikTok"
+          chevron
+        /></Link>
+      </ListGroup>
+
       <ListGroup header={`Recent Grades · ${(data ?? []).length}`}>
         {recent.length === 0 && (
           <Row title="No grades yet" subtitle="Submit a drill to populate" />

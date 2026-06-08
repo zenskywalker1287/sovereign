@@ -1,0 +1,4 @@
+youtube-transcript-api>=0.6.2
+google-api-python-client>=2.140.0
+python-slugify>=8.0.4
+beautifulsoup4>=4.12.3
