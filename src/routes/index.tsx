@@ -1,15 +1,22 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { LargeTitle, Card, ListGroup, Row, Button } from '@/ui/primitives';
 import { Icon } from '@/ui/Icon';
+import { useStore, selectAuraPct, selectAuraLabel } from '@/domain/store';
 
 export const Route = createFileRoute('/')({ component: Home });
 
 function Home() {
-  // v1 hardcoded mocks; wired to vault in week 2
+  const profile = useStore(s => s.profile);
+  const stats = useStore(s => s.stats);
+  const auraPct = useStore(selectAuraPct);
+  const auraLabel = selectAuraLabel(auraPct);
+
+  const missions = useStore(s => s.todayMissions());
+  const checks = useStore(s => s.todayChecks());
+  const nextMission = missions.find(m => !checks[m.id]) ?? missions[0];
+  const doneCount = missions.filter(m => checks[m.id]).length;
+
   const greeting = greetingFor(new Date().getHours());
-  const auraPct = 87;
-  const auraState = 'Locked In';
-  const streak = 12;
 
   return (
     <div>
@@ -23,10 +30,9 @@ function Home() {
             </div>
           </Link>
         }
-        subtitle={<span className="ios-subheadline" style={{ color: 'var(--label-secondary)' }}>Zatreides</span>}
+        subtitle={<span className="ios-subheadline" style={{ color: 'var(--label-secondary)' }}>{profile.name}</span>}
       />
 
-      {/* Aura card */}
       <section className="px-4 mb-4">
         <Card>
           <div className="ios-footnote uppercase tracking-wide mb-1" style={{ color: 'var(--label-secondary)' }}>
@@ -34,9 +40,9 @@ function Home() {
           </div>
           <div className="flex items-end justify-between gap-3">
             <div>
-              <div className="ios-title-1" style={{ color: 'var(--label)' }}>{auraState}</div>
+              <div className="ios-title-1" style={{ color: 'var(--label)' }}>{auraLabel}</div>
               <div className="ios-footnote mt-0.5" style={{ color: 'var(--label-secondary)' }}>
-                {streak}-day streak
+                {stats.currentStreak === 0 ? 'Start your streak today' : `${stats.currentStreak}-day streak`}
               </div>
             </div>
             <div className="text-right">
@@ -45,44 +51,40 @@ function Home() {
             </div>
           </div>
           <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--fill-tertiary)' }}>
-            <div className="h-full rounded-full" style={{ width: `${auraPct}%`, background: 'var(--tint)' }} />
+            <div className="h-full rounded-full transition-all" style={{ width: `${auraPct}%`, background: 'var(--tint)' }} />
           </div>
         </Card>
       </section>
 
-      {/* Today's Mission */}
-      <ListGroup header="Today's Mission">
-        <Row
-          leading={<IconBadge name="flame" color="var(--orange)" />}
-          title="Train the Body"
-          subtitle="Workout · 45 min · +75 XP"
+      <ListGroup header={`Today's Mission · ${doneCount} / ${missions.length}`}>
+        <Link to="/missions"><Row
+          leading={<IconBadge name={nextMission.icon as any} color={iconColor(nextMission.archetype)} />}
+          title={nextMission.title}
+          subtitle={`${nextMission.subtitle} · +${nextMission.xp} XP`}
           chevron
-          onClick={() => {}}
-        />
+        /></Link>
       </ListGroup>
 
-      {/* Writing Studio quick-access */}
       <ListGroup header="Writing Studio">
         <Link to="/brain"><Row
           leading={<IconBadge name="pencil" color="var(--tint)" />}
           title="Start a Drill"
-          subtitle="Fiction or copywriting · 10 min"
+          subtitle="Fiction or copy · timed + graded"
           chevron
         /></Link>
         <Link to="/brain"><Row
           leading={<IconBadge name="doc-text" color="var(--purple)" />}
           title="Graded History"
-          subtitle="See score over time"
+          subtitle={`${stats.drillsCompleted} drill${stats.drillsCompleted === 1 ? '' : 's'} graded`}
           chevron
         /></Link>
       </ListGroup>
 
-      {/* Mental Diet */}
-      <ListGroup header="Mental Diet" footer="Run /mental-diet to refresh">
-        <Row leading={<IconBadge name="pencil" color="var(--pink)" />}    title="Write" subtitle="Tap to generate today's prompt" chevron onClick={() => {}} />
-        <Row leading={<IconBadge name="book" color="var(--indigo)" />}    title="Study" subtitle="Tap to pick today's note"     chevron onClick={() => {}} />
-        <Row leading={<IconBadge name="sparkles" color="var(--teal)" />}  title="Watch" subtitle="Drop a YouTube link"          chevron onClick={() => {}} />
-        <Row leading={<IconBadge name="brain" color="var(--green)" />}    title="Think" subtitle="The synthesis question"      chevron onClick={() => {}} />
+      <ListGroup header="Mental Diet" footer="Coming next: Write / Study / Watch / Think generated daily">
+        <Row leading={<IconBadge name="pencil" color="var(--pink)" />}  title="Write" subtitle="Long-form prompt" chevron onClick={() => {}} />
+        <Row leading={<IconBadge name="book"   color="var(--indigo)" />} title="Study" subtitle="Vault deep-read"  chevron onClick={() => {}} />
+        <Row leading={<IconBadge name="sparkles" color="var(--teal)" />} title="Watch" subtitle="YouTube link"     chevron onClick={() => {}} />
+        <Row leading={<IconBadge name="brain"  color="var(--green)" />}  title="Think" subtitle="Synthesis question" chevron onClick={() => {}} />
       </ListGroup>
 
       <div className="px-4 pb-2">
@@ -102,7 +104,13 @@ function IconBadge({ name, color }: { name: any; color: string }) {
     </div>
   );
 }
-
+function iconColor(archetype: string) {
+  return archetype === 'warrior' ? 'var(--red)'
+    : archetype === 'maestro' ? 'var(--purple)'
+    : archetype === 'creator' ? 'var(--pink)'
+    : archetype === 'leader' ? 'var(--orange)'
+    : 'var(--gray)';
+}
 function greetingFor(h: number) {
   if (h < 5)  return 'Late Night';
   if (h < 12) return 'Good Morning';

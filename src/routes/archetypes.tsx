@@ -1,23 +1,33 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { LargeTitle, ListGroup, Row } from '@/ui/primitives';
+import { LargeTitle, ListGroup, Row, Card } from '@/ui/primitives';
+import { useStore, selectLevelForXp } from '@/domain/store';
+import { DEFAULT_ARCHETYPES } from '@/domain/archetypes';
 
 export const Route = createFileRoute('/archetypes')({ component: Archetypes });
 
-interface Arc { slug: string; the: string; name: string; jp: string; lvl: number; xp: number; xpMax: number; }
-const ARCS: Arc[] = [
-  { slug: 'executor', the: 'The', name: 'Executor', jp: '執行者', lvl: 47, xp: 16480, xpMax: 20000 },
-  { slug: 'warrior',  the: 'The', name: 'Warrior',  jp: '戦士',   lvl: 38, xp: 8200,  xpMax: 12000 },
-  { slug: 'creator',  the: 'The', name: 'Creator',  jp: '創造者', lvl: 29, xp: 4100,  xpMax: 7500  },
-  { slug: 'maestro',  the: 'The', name: 'Maestro',  jp: '巨匠',   lvl: 23, xp: 2900,  xpMax: 4800  },
-  { slug: 'leader',   the: 'The', name: 'Leader',   jp: '指導者', lvl: 19, xp: 1800,  xpMax: 3200  },
-];
-
 function Archetypes() {
+  const archetypeXp = useStore(s => s.archetypeXp);
+  const ranked = [...DEFAULT_ARCHETYPES]
+    .map(a => ({ ...a, xp: archetypeXp[a.slug] ?? 0, ...selectLevelForXp(archetypeXp[a.slug] ?? 0) }))
+    .sort((a, b) => b.level - a.level || b.xpInLevel - a.xpInLevel);
+  const totalLevel = ranked.reduce((s, a) => s + a.level, 0);
+
   return (
     <div>
       <LargeTitle title="Archetypes" />
+
+      <section className="px-4 mb-4">
+        <Card>
+          <div className="ios-footnote uppercase tracking-wide" style={{ color: 'var(--label-secondary)' }}>Total Level</div>
+          <div className="ios-large-title leading-none mt-0.5" style={{ color: 'var(--label)' }}>{totalLevel}</div>
+          <div className="ios-footnote mt-1" style={{ color: 'var(--label-secondary)' }}>
+            Sum of all archetype levels. Bumps when any one of them levels up.
+          </div>
+        </Card>
+      </section>
+
       <ListGroup>
-        {ARCS.map(a => (
+        {ranked.map(a => (
           <Row
             key={a.slug}
             leading={
@@ -29,15 +39,17 @@ function Archetypes() {
             title={
               <div className="flex items-baseline gap-2">
                 <span>{a.name}</span>
-                <span className="ios-footnote font-mono" style={{ color: 'var(--label-tertiary)' }}>LVL {a.lvl}</span>
+                <span className="ios-footnote font-mono" style={{ color: 'var(--label-tertiary)' }}>LVL {a.level}</span>
               </div>
             }
             subtitle={
               <div className="flex items-center gap-2 mt-1">
                 <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'var(--fill-tertiary)' }}>
-                  <div className="h-full rounded-full" style={{ width: `${(a.xp / a.xpMax) * 100}%`, background: 'var(--tint)' }} />
+                  <div className="h-full rounded-full" style={{ width: `${(a.xpInLevel / a.xpToNext) * 100}%`, background: 'var(--tint)' }} />
                 </div>
-                <span className="ios-caption-1 font-mono" style={{ color: 'var(--label-secondary)' }}>{a.xp.toLocaleString()} / {a.xpMax.toLocaleString()}</span>
+                <span className="ios-caption-1 font-mono" style={{ color: 'var(--label-secondary)' }}>
+                  {a.xpInLevel.toLocaleString()} / {a.xpToNext.toLocaleString()}
+                </span>
               </div>
             }
             chevron
@@ -45,6 +57,10 @@ function Archetypes() {
           />
         ))}
       </ListGroup>
+
+      <div className="px-4 ios-footnote" style={{ color: 'var(--label-secondary)' }}>
+        XP is awarded automatically when you complete drills + missions. Copy → Creator · Fiction → Maestro · Freeform → Executor.
+      </div>
     </div>
   );
 }

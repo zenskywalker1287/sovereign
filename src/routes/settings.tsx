@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { ListGroup, Row, Button, Card } from '@/ui/primitives';
 import { Icon } from '@/ui/Icon';
 import { getSettings, saveSettings, MODELS, type Provider } from '@/domain/grading';
+import { wipeAllData } from '@/auth/passcode';
 
 export const Route = createFileRoute('/settings')({ component: Settings });
 
@@ -146,9 +147,33 @@ function Settings() {
       </section>
 
       <ListGroup header="About">
-        <Row title="Version" trailing="0.1.0 alpha" />
+        <Row title="Version" trailing="0.2.0 alpha" />
         <Row title="Storage" subtitle="Local (browser/device)" trailing="—" />
       </ListGroup>
+
+      <section className="px-4 mb-12">
+        <div className="px-4 mb-1.5 ios-footnote uppercase tracking-wide" style={{ color: 'var(--label-secondary)' }}>Danger zone</div>
+        <Card>
+          <div className="ios-headline" style={{ color: 'var(--label)' }}>Wipe all device data</div>
+          <div className="ios-footnote mt-1" style={{ color: 'var(--label-secondary)' }}>
+            Erases passcode, settings, missions, XP, drafts and graded results stored on THIS device.
+            Obsidian vault files (when wired) are not touched.
+          </div>
+          <div className="mt-3 flex">
+            <button
+              onClick={() => {
+                if (!confirm('Wipe ALL SOVEREIGN data on this device? This cannot be undone.')) return;
+                wipeAllData();
+                location.reload();
+              }}
+              className="h-[44px] px-4 rounded-[12px] ios-headline active:opacity-70"
+              style={{ background: 'var(--red)', color: 'white' }}
+            >
+              Wipe data
+            </button>
+          </div>
+        </Card>
+      </section>
     </div>
   );
 }

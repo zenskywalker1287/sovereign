@@ -4,6 +4,9 @@ import { Icon } from '@/ui/Icon';
 import { Button } from '@/ui/primitives';
 import { drillById } from '@/domain/drills';
 import { gradePiece, saveGradedToVault, type GradeResult } from '@/domain/grading';
+import { archetypeForDrill } from '@/domain/archetypes';
+import { useStore } from '@/domain/store';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/brain/drill/$id')({ component: Drill });
 
@@ -11,6 +14,8 @@ function Drill() {
   const { id } = useParams({ from: '/brain/drill/$id' });
   const drill = drillById(id);
   const navigate = useNavigate();
+  const awardDrillCompletion = useStore(s => s.awardDrillCompletion);
+  const queryClient = useQueryClient();
   const [text, setText] = useState('');
   const [seconds, setSeconds] = useState((drill?.minutes ?? 10) * 60);
   const [running, setRunning] = useState(false);
@@ -70,6 +75,14 @@ function Drill() {
         const p = await saveGradedToVault(text, drill, r);
         setSavedPath(p);
         localStorage.removeItem(draftKey);
+        // Award XP to the right archetype + bump streak/aura via the persistent store.
+        // Total score normalized to /100 for the XP grant.
+        const max = r.signature ? 100 : 60;
+        const xpAward = Math.round((r.total / max) * 100);
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        awardDrillCompletion({ archetype: archetypeForDrill(drill), xp: xpAward, words });
+        // Invalidate the graded list so Brain + History pick up the new entry.
+        queryClient.invalidateQueries({ queryKey: ['graded'] });
       }
     } finally {
       setGrading(false);

@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Outlet, createRootRouteWithContext, useRouterState, Link } from '@tanstack/react-router';
 import type { QueryClient } from '@tanstack/react-query';
 import { Icon } from '@/ui/Icon';
+import { Lock } from '@/auth/Lock';
+import { isUnlocked } from '@/auth/passcode';
 
 interface RouterCtx { queryClient: QueryClient }
 
@@ -19,6 +22,8 @@ const TABS = [
 function RootLayout() {
   const { location } = useRouterState();
   const path = location.pathname;
+  const [unlocked, setUnlocked] = useState(() => isUnlocked());
+  if (!unlocked) return <Lock onUnlocked={() => setUnlocked(true)} />;
   return (
     <div className="flex flex-col min-h-dvh">
       <main className="flex-1 pb-[calc(env(safe-area-inset-bottom)+72px)]">

@@ -15,6 +15,7 @@ import { Route as MissionsRouteImport } from './routes/missions'
 import { Route as BrainRouteImport } from './routes/brain'
 import { Route as ArchetypesRouteImport } from './routes/archetypes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BrainHistoryRouteImport } from './routes/brain.history'
 import { Route as BrainStudioLaneRouteImport } from './routes/brain.studio.$lane'
 import { Route as BrainDrillIdRouteImport } from './routes/brain.drill.$id'
 
@@ -48,6 +49,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BrainHistoryRoute = BrainHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => BrainRoute,
+} as any)
 const BrainStudioLaneRoute = BrainStudioLaneRouteImport.update({
   id: '/studio/$lane',
   path: '/studio/$lane',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/brain/history': typeof BrainHistoryRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/brain/history': typeof BrainHistoryRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/brain/history': typeof BrainHistoryRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/brain/history'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/brain/history'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/brain/history'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
   fileRoutesById: FileRoutesById
@@ -176,6 +188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/brain/history': {
+      id: '/brain/history'
+      path: '/history'
+      fullPath: '/brain/history'
+      preLoaderRoute: typeof BrainHistoryRouteImport
+      parentRoute: typeof BrainRoute
+    }
     '/brain/studio/$lane': {
       id: '/brain/studio/$lane'
       path: '/studio/$lane'
@@ -194,11 +213,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface BrainRouteChildren {
+  BrainHistoryRoute: typeof BrainHistoryRoute
   BrainDrillIdRoute: typeof BrainDrillIdRoute
   BrainStudioLaneRoute: typeof BrainStudioLaneRoute
 }
 
 const BrainRouteChildren: BrainRouteChildren = {
+  BrainHistoryRoute: BrainHistoryRoute,
   BrainDrillIdRoute: BrainDrillIdRoute,
   BrainStudioLaneRoute: BrainStudioLaneRoute,
 }
