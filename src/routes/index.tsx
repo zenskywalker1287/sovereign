@@ -65,17 +65,23 @@ function Home() {
         /></Link>
       </ListGroup>
 
-      <ListGroup header="Writing Studio">
+      <ListGroup header="Training">
         <Link to="/brain"><Row
           leading={<IconBadge name="pencil" color="var(--tint)" />}
-          title="Start a Drill"
+          title="Writing Studio"
           subtitle="Fiction or copy · timed + graded"
           chevron
         /></Link>
-        <Link to="/brain"><Row
+        <Link to="/speech"><Row
+          leading={<IconBadge name="sparkles" color="var(--orange)" />}
+          title="Speech Gym"
+          subtitle="Articulation · pace · vocabulary · cadence"
+          chevron
+        /></Link>
+        <Link to="/brain/history"><Row
           leading={<IconBadge name="doc-text" color="var(--purple)" />}
           title="Graded History"
-          subtitle={`${stats.drillsCompleted} drill${stats.drillsCompleted === 1 ? '' : 's'} graded`}
+          subtitle={`${stats.drillsCompleted} drill${stats.drillsCompleted === 1 ? '' : 's'} completed`}
           chevron
         /></Link>
       </ListGroup>

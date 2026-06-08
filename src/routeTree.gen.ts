@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchRouteImport } from './routes/watch'
 import { Route as SurpriseRouteImport } from './routes/surprise'
+import { Route as SpeechRouteImport } from './routes/speech'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as MissionsRouteImport } from './routes/missions'
@@ -21,6 +22,7 @@ import { Route as ArchetypesRouteImport } from './routes/archetypes'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NoteSplatRouteImport } from './routes/note.$'
 import { Route as BrainHistoryRouteImport } from './routes/brain.history'
+import { Route as SpeechDrillIdRouteImport } from './routes/speech.drill.$id'
 import { Route as BrainStudioLaneRouteImport } from './routes/brain.studio.$lane'
 import { Route as BrainDrillIdRouteImport } from './routes/brain.drill.$id'
 
@@ -32,6 +34,11 @@ const WatchRoute = WatchRouteImport.update({
 const SurpriseRoute = SurpriseRouteImport.update({
   id: '/surprise',
   path: '/surprise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpeechRoute = SpeechRouteImport.update({
+  id: '/speech',
+  path: '/speech',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -84,6 +91,11 @@ const BrainHistoryRoute = BrainHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => BrainRoute,
 } as any)
+const SpeechDrillIdRoute = SpeechDrillIdRouteImport.update({
+  id: '/drill/$id',
+  path: '/drill/$id',
+  getParentRoute: () => SpeechRoute,
+} as any)
 const BrainStudioLaneRoute = BrainStudioLaneRouteImport.update({
   id: '/studio/$lane',
   path: '/studio/$lane',
@@ -104,12 +116,14 @@ export interface FileRoutesByFullPath {
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/speech': typeof SpeechRouteWithChildren
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
   '/brain/history': typeof BrainHistoryRoute
   '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
+  '/speech/drill/$id': typeof SpeechDrillIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -120,12 +134,14 @@ export interface FileRoutesByTo {
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/speech': typeof SpeechRouteWithChildren
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
   '/brain/history': typeof BrainHistoryRoute
   '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
+  '/speech/drill/$id': typeof SpeechDrillIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -137,12 +153,14 @@ export interface FileRoutesById {
   '/missions': typeof MissionsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/speech': typeof SpeechRouteWithChildren
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
   '/brain/history': typeof BrainHistoryRoute
   '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
+  '/speech/drill/$id': typeof SpeechDrillIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -155,12 +173,14 @@ export interface FileRouteTypes {
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/speech'
     | '/surprise'
     | '/watch'
     | '/brain/history'
     | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
+    | '/speech/drill/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -171,12 +191,14 @@ export interface FileRouteTypes {
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/speech'
     | '/surprise'
     | '/watch'
     | '/brain/history'
     | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
+    | '/speech/drill/$id'
   id:
     | '__root__'
     | '/'
@@ -187,12 +209,14 @@ export interface FileRouteTypes {
     | '/missions'
     | '/profile'
     | '/settings'
+    | '/speech'
     | '/surprise'
     | '/watch'
     | '/brain/history'
     | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
+    | '/speech/drill/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -204,6 +228,7 @@ export interface RootRouteChildren {
   MissionsRoute: typeof MissionsRoute
   ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
+  SpeechRoute: typeof SpeechRouteWithChildren
   SurpriseRoute: typeof SurpriseRoute
   WatchRoute: typeof WatchRoute
   NoteSplatRoute: typeof NoteSplatRoute
@@ -223,6 +248,13 @@ declare module '@tanstack/react-router' {
       path: '/surprise'
       fullPath: '/surprise'
       preLoaderRoute: typeof SurpriseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/speech': {
+      id: '/speech'
+      path: '/speech'
+      fullPath: '/speech'
+      preLoaderRoute: typeof SpeechRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -295,6 +327,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrainHistoryRouteImport
       parentRoute: typeof BrainRoute
     }
+    '/speech/drill/$id': {
+      id: '/speech/drill/$id'
+      path: '/drill/$id'
+      fullPath: '/speech/drill/$id'
+      preLoaderRoute: typeof SpeechDrillIdRouteImport
+      parentRoute: typeof SpeechRoute
+    }
     '/brain/studio/$lane': {
       id: '/brain/studio/$lane'
       path: '/studio/$lane'
@@ -326,6 +365,17 @@ const BrainRouteChildren: BrainRouteChildren = {
 
 const BrainRouteWithChildren = BrainRoute._addFileChildren(BrainRouteChildren)
 
+interface SpeechRouteChildren {
+  SpeechDrillIdRoute: typeof SpeechDrillIdRoute
+}
+
+const SpeechRouteChildren: SpeechRouteChildren = {
+  SpeechDrillIdRoute: SpeechDrillIdRoute,
+}
+
+const SpeechRouteWithChildren =
+  SpeechRoute._addFileChildren(SpeechRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchetypesRoute: ArchetypesRoute,
@@ -335,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   MissionsRoute: MissionsRoute,
   ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
+  SpeechRoute: SpeechRouteWithChildren,
   SurpriseRoute: SurpriseRoute,
   WatchRoute: WatchRoute,
   NoteSplatRoute: NoteSplatRoute,

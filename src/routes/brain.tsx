@@ -14,7 +14,7 @@ function Brain() {
     <div>
       <LargeTitle title="Brain" subtitle={<span className="ios-subheadline" style={{ color: 'var(--label-secondary)' }}>Writing Studio + the vault</span>} />
 
-      <section className="px-4 mb-6">
+      <section className="px-4 mb-4">
         <Card>
           <div className="ios-footnote uppercase tracking-wide mb-1" style={{ color: 'var(--label-secondary)' }}>Writing Studio</div>
           <div className="ios-title-2 mb-3" style={{ color: 'var(--label)' }}>Pick a drill. Write. Get graded.</div>
@@ -24,6 +24,27 @@ function Brain() {
             <LaneTile to="/brain/studio/$lane" params={{ lane: 'freeform' }} emoji="●" label="Freeform"/>
           </div>
         </Card>
+      </section>
+
+      <section className="px-4 mb-6">
+        <Link to="/speech">
+          <Card>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center"
+                   style={{ background: 'var(--orange)', color: 'white' }}>
+                <Icon name="sparkles" size={20} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="ios-footnote uppercase tracking-wide" style={{ color: 'var(--label-secondary)' }}>Speech Gym</div>
+                <div className="ios-headline" style={{ color: 'var(--label)' }}>Train articulate speech</div>
+                <div className="ios-footnote mt-0.5" style={{ color: 'var(--label-secondary)' }}>
+                  Articulation · pace · vocabulary · cadence · 3×5 daily diet
+                </div>
+              </div>
+              <Icon name="chevron-right" size={16} />
+            </div>
+          </Card>
+        </Link>
       </section>
 
       <ListGroup header="Author Bootcamps">
