@@ -22,7 +22,7 @@ function Settings() {
   const availableModels = MODELS.filter(m => m.provider === provider);
   const currentModelExistsInProvider = availableModels.some(m => m.id === modelId);
 
-  function persist(next: Partial<{ provider: Provider; modelId: string; openrouterKey: string; geminiKey: string }>) {
+  function persist(next: Partial<{ provider: Provider; modelId: string; openrouterKey: string; geminiKey: string; openaiKey: string }>) {
     saveSettings(next);
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
