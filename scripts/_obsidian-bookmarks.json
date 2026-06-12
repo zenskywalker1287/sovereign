@@ -1,0 +1,30 @@
+{
+  "items": [
+    { "type": "file", "title": "🏠 Dashboard",        "path": "_OBSIDIAN-DASHBOARD.md" },
+    { "type": "file", "title": "✦ Setup guide",       "path": "_OBSIDIAN-SETUP.md" },
+    { "type": "file", "title": "# Tag taxonomy",      "path": "_TAGS.md" },
+    { "type": "file", "title": "🌐 Vault index",      "path": "_INDEX.md" },
+    { "type": "group", "title": "Daily", "items": [
+        { "type": "folder", "title": "Inbox",          "path": "00-INBOX" },
+        { "type": "folder", "title": "Mental Diet",    "path": "00-INBOX/mental-diet" },
+        { "type": "folder", "title": "Journal",        "path": "00-INBOX/journal" }
+      ]
+    },
+    { "type": "group", "title": "Writing", "items": [
+        { "type": "file",   "title": "Halbert bootcamp", "path": "01-CRAFT/writing/authors/gary-halbert.md" },
+        { "type": "file",   "title": "Meyer bootcamp",   "path": "01-CRAFT/writing/authors/stephenie-meyer.md" },
+        { "type": "file",   "title": "Drill bank",       "path": "01-CRAFT/writing/drills/_drill-bank.md" },
+        { "type": "folder", "title": "Graded",           "path": "01-CRAFT/writing/graded" },
+        { "type": "file",   "title": "Speech training",  "path": "01-CRAFT/speech-training.md" }
+      ]
+    },
+    { "type": "group", "title": "Library", "items": [
+        { "type": "folder", "title": "Watched (YT)",     "path": "08-LIBRARY/watched" },
+        { "type": "folder", "title": "Gemini history",   "path": "08-LIBRARY/gemini-history" },
+        { "type": "folder", "title": "Twitter bookmarks","path": "08-LIBRARY/twitter-bookmarks" },
+        { "type": "folder", "title": "Instagram saves",  "path": "08-LIBRARY/instagram-saves" },
+        { "type": "folder", "title": "YouTube liked",    "path": "08-LIBRARY/youtube-liked" }
+      ]
+    }
+  ]
+}
