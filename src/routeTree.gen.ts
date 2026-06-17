@@ -12,8 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WatchRouteImport } from './routes/watch'
 import { Route as SurpriseRouteImport } from './routes/surprise'
 import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as MissionsRouteImport } from './routes/missions'
+import { Route as MindRouteImport } from './routes/mind'
+import { Route as MeRouteImport } from './routes/me'
+import { Route as LibraryRouteImport } from './routes/library'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as DietRouteImport } from './routes/diet'
 import { Route as IndexRouteImport } from './routes/index'
@@ -43,14 +44,19 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const MindRoute = MindRouteImport.update({
+  id: '/mind',
+  path: '/mind',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MissionsRoute = MissionsRouteImport.update({
-  id: '/missions',
-  path: '/missions',
+const MeRoute = MeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JournalRoute = JournalRouteImport.update({
@@ -123,8 +129,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/diet': typeof DietRoute
   '/journal': typeof JournalRoute
-  '/missions': typeof MissionsRoute
-  '/profile': typeof ProfileRoute
+  '/library': typeof LibraryRoute
+  '/me': typeof MeRoute
+  '/mind': typeof MindRoute
   '/settings': typeof SettingsRoute
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
@@ -143,8 +150,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/diet': typeof DietRoute
   '/journal': typeof JournalRoute
-  '/missions': typeof MissionsRoute
-  '/profile': typeof ProfileRoute
+  '/library': typeof LibraryRoute
+  '/me': typeof MeRoute
+  '/mind': typeof MindRoute
   '/settings': typeof SettingsRoute
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
@@ -164,8 +172,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/diet': typeof DietRoute
   '/journal': typeof JournalRoute
-  '/missions': typeof MissionsRoute
-  '/profile': typeof ProfileRoute
+  '/library': typeof LibraryRoute
+  '/me': typeof MeRoute
+  '/mind': typeof MindRoute
   '/settings': typeof SettingsRoute
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
@@ -186,8 +195,9 @@ export interface FileRouteTypes {
     | '/'
     | '/diet'
     | '/journal'
-    | '/missions'
-    | '/profile'
+    | '/library'
+    | '/me'
+    | '/mind'
     | '/settings'
     | '/surprise'
     | '/watch'
@@ -206,8 +216,9 @@ export interface FileRouteTypes {
     | '/'
     | '/diet'
     | '/journal'
-    | '/missions'
-    | '/profile'
+    | '/library'
+    | '/me'
+    | '/mind'
     | '/settings'
     | '/surprise'
     | '/watch'
@@ -226,8 +237,9 @@ export interface FileRouteTypes {
     | '/'
     | '/diet'
     | '/journal'
-    | '/missions'
-    | '/profile'
+    | '/library'
+    | '/me'
+    | '/mind'
     | '/settings'
     | '/surprise'
     | '/watch'
@@ -247,8 +259,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DietRoute: typeof DietRoute
   JournalRoute: typeof JournalRoute
-  MissionsRoute: typeof MissionsRoute
-  ProfileRoute: typeof ProfileRoute
+  LibraryRoute: typeof LibraryRoute
+  MeRoute: typeof MeRoute
+  MindRoute: typeof MindRoute
   SettingsRoute: typeof SettingsRoute
   SurpriseRoute: typeof SurpriseRoute
   WatchRoute: typeof WatchRoute
@@ -287,18 +300,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
+    '/mind': {
+      id: '/mind'
+      path: '/mind'
+      fullPath: '/mind'
+      preLoaderRoute: typeof MindRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/missions': {
-      id: '/missions'
-      path: '/missions'
-      fullPath: '/missions'
-      preLoaderRoute: typeof MissionsRouteImport
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/journal': {
@@ -399,8 +419,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DietRoute: DietRoute,
   JournalRoute: JournalRoute,
-  MissionsRoute: MissionsRoute,
-  ProfileRoute: ProfileRoute,
+  LibraryRoute: LibraryRoute,
+  MeRoute: MeRoute,
+  MindRoute: MindRoute,
   SettingsRoute: SettingsRoute,
   SurpriseRoute: SurpriseRoute,
   WatchRoute: WatchRoute,

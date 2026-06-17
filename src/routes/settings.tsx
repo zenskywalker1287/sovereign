@@ -75,8 +75,8 @@ function Settings() {
     <div className="pb-16">
       {/* Header */}
       <header className="safe-top px-5 pt-3 pb-2 flex items-center justify-between">
-        <Link to="/profile" className="ios-body flex items-center gap-1" style={{ color: 'var(--tint)' }}>
-          <Icon name="chevron-left" size={16} /> Profile
+        <Link to="/me" className="ios-body flex items-center gap-1" style={{ color: 'var(--tint)' }}>
+          <Icon name="chevron-left" size={16} /> Me
         </Link>
         <h1 className="ios-headline" style={{ color: 'var(--label)' }}>Settings</h1>
         <div className="w-12 text-right">

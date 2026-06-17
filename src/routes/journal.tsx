@@ -71,7 +71,7 @@ ${text}`;
       <LargeTitle
         title="Journal"
         trailing={
-          <Link to="/profile" className="ios-headline" style={{ color: 'var(--tint)' }}>Done</Link>
+          <Link to="/me" className="ios-headline" style={{ color: 'var(--tint)' }}>Done</Link>
         }
         subtitle={
           <span className="ios-subheadline" style={{ color: 'var(--label-secondary)' }}>
