@@ -64,8 +64,38 @@ async function openrouter({ system, user, modelId, key, temperature = 0.7, mode 
   return data.choices?.[0]?.message?.content ?? '';
 }
 
+// Models we try in order when the requested Gemini model returns 503 "high demand".
+// `gemini-flash-latest` is fast + cheap when up, but frequently capacity-throttled.
+// `gemini-2.5-flash` is more stable in our testing.
+const GEMINI_FALLBACK_CHAIN = ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.0-flash'];
+
 async function gemini({ system, user, modelId, key, temperature = 0.7, mode = 'text', fileUri }:
   LLMCall & { modelId: string; key: string }): Promise<string> {
+  // Build a fallback chain starting with the user's requested model.
+  // If the request fails with 503 "high demand", we transparently try the next model.
+  const tried = new Set<string>();
+  const chain = [modelId, ...GEMINI_FALLBACK_CHAIN.filter(m => m !== modelId)];
+  let lastErr: any;
+
+  for (const candidate of chain) {
+    if (tried.has(candidate)) continue;
+    tried.add(candidate);
+    try {
+      return await geminiCall(candidate, key, user, system, temperature, mode, fileUri);
+    } catch (e: any) {
+      lastErr = e;
+      const msg = String(e?.message ?? '').toLowerCase();
+      // Only fall through on capacity/availability errors; bail on auth/billing.
+      if (!msg.includes('high demand') && !msg.includes('overloaded') && !msg.includes('503')) {
+        throw e;
+      }
+    }
+  }
+  throw lastErr ?? new LLMError('All Gemini models failed');
+}
+
+async function geminiCall(modelId: string, key: string, user: string, system: string | undefined,
+                          temperature: number, mode: LLMMode, fileUri: string | undefined): Promise<string> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${key}`;
   const parts: any[] = [{ text: user }];
   if (fileUri) parts.push({ fileData: { fileUri } });
@@ -80,7 +110,11 @@ async function gemini({ system, user, modelId, key, temperature = 0.7, mode = 't
     body: JSON.stringify(body),
   });
   const data = await resp.json();
-  if (!resp.ok) throw new LLMError(data?.error?.message ?? resp.statusText);
+  if (!resp.ok) {
+    // Attach status code to the message so the chain wrapper can detect 503.
+    const detail = data?.error?.message ?? resp.statusText;
+    throw new LLMError(`${resp.status}: ${detail}`);
+  }
   return data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 }
 

@@ -74,7 +74,8 @@ export const MODELS: ModelChoice[] = [
   { id: 'deepseek/deepseek-chat-v3.1:free',       label: 'DeepSeek V3.1 (free)',          provider: 'openrouter', hint: 'Best reasoning, slower.' },
   { id: 'qwen/qwen-2.5-72b-instruct:free',        label: 'Qwen 2.5 72B (free)',           provider: 'openrouter', hint: 'Solid alt, multilingual.' },
   { id: 'google/gemini-2.0-flash-exp:free',       label: 'Gemini 2.0 Flash (via OR free)',provider: 'openrouter', hint: 'Google through OpenRouter.' },
-  { id: 'gemini-flash-latest',                    label: 'Gemini Flash (direct)',         provider: 'gemini',     hint: 'Uses Gemini key directly.' },
+  { id: 'gemini-2.5-flash',                       label: 'Gemini 2.5 Flash (direct)',     provider: 'gemini',     hint: 'More stable than flash-latest. Uses Gemini key.' },
+  { id: 'gemini-flash-latest',                    label: 'Gemini Flash latest (direct)',  provider: 'gemini',     hint: 'Newest but often capacity-throttled.' },
 ];
 export const DEFAULT_MODEL_ID = MODELS[0].id;
 
@@ -153,20 +154,39 @@ async function callOpenRouter(modelId: string, key: string, prompt: string): Pro
   return safeParseJson(text);
 }
 
+// Try the requested model first; fall back through stable alternates on 503 "high demand".
+const GEMINI_GRADING_FALLBACKS = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash'];
+
 async function callGemini(modelId: string, key: string, prompt: string): Promise<any> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${key}`;
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: 'application/json', temperature: 0.4 },
-    }),
-  });
-  const data = await resp.json();
-  if (!resp.ok) throw new Error(data?.error?.message ?? resp.statusText);
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-  return safeParseJson(text);
+  const chain = [modelId, ...GEMINI_GRADING_FALLBACKS.filter(m => m !== modelId)];
+  let lastErr: any;
+  for (const candidate of chain) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${candidate}:generateContent?key=${key}`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: 'application/json', temperature: 0.4 },
+        }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        lastErr = new Error(`${resp.status}: ${data?.error?.message ?? resp.statusText}`);
+        // Bail on real errors; only loop on capacity errors.
+        if (resp.status !== 503 && !String(lastErr.message).toLowerCase().includes('high demand')) throw lastErr;
+        continue;
+      }
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+      return safeParseJson(text);
+    } catch (e: any) {
+      lastErr = e;
+      const msg = String(e?.message ?? '').toLowerCase();
+      if (!msg.includes('503') && !msg.includes('high demand')) throw e;
+    }
+  }
+  throw lastErr ?? new Error('All Gemini grading models failed');
 }
 
 /** Open-source models sometimes wrap JSON in ```json fences. Strip and recover. */

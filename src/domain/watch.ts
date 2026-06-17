@@ -61,7 +61,8 @@ export async function watchAndSummarize(url: string): Promise<WatchNote> {
       mode: 'json',
       temperature: 0.5,
       fileUri: url,
-      modelOverride: { provider: 'gemini', modelId: 'gemini-flash-latest' },
+      // 2.5 first (more stable). llm.ts auto-falls-back through flash-latest + 2.0-flash on 503.
+      modelOverride: { provider: 'gemini', modelId: 'gemini-2.5-flash' },
     });
   } catch (e) {
     if (e instanceof MissingKeyError) {
