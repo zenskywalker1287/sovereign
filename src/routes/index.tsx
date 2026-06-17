@@ -13,8 +13,9 @@ function Home() {
 
   const missions = useStore(s => s.todayMissions());
   const checks = useStore(s => s.todayChecks());
-  const nextMission = missions.find(m => !checks[m.id]) ?? missions[0];
+  const nextMission = missions.find(m => !checks[m.id]);
   const doneCount = missions.filter(m => checks[m.id]).length;
+  const allDone = doneCount === missions.length;
 
   const greeting = greetingFor(new Date().getHours());
 
@@ -57,12 +58,21 @@ function Home() {
       </section>
 
       <ListGroup header={`Today's Mission · ${doneCount} / ${missions.length}`}>
-        <Link to="/missions"><Row
-          leading={<IconBadge name={nextMission.icon as any} color={iconColor(nextMission.archetype)} />}
-          title={nextMission.title}
-          subtitle={`${nextMission.subtitle} · +${nextMission.xp} XP`}
-          chevron
-        /></Link>
+        {allDone ? (
+          <Link to="/missions"><Row
+            leading={<IconBadge name="check" color="var(--green)" />}
+            title="All missions complete"
+            subtitle="Locked in. See you tomorrow."
+            chevron
+          /></Link>
+        ) : (
+          <Link to="/missions"><Row
+            leading={<IconBadge name={nextMission!.icon as any} color={iconColor(nextMission!.archetype)} />}
+            title={nextMission!.title}
+            subtitle={`${nextMission!.subtitle} · +${nextMission!.xp} XP`}
+            chevron
+          /></Link>
+        )}
       </ListGroup>
 
       <ListGroup header="Training">

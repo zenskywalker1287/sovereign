@@ -111,6 +111,30 @@ export function Button({
   );
 }
 
+/* ─── Switch (iOS toggle) ──────────────────────────────── */
+export function Switch({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      onClick={() => onChange(!on)}
+      role="switch"
+      aria-checked={on}
+      className="relative inline-flex h-[31px] w-[51px] rounded-full transition-colors no-select"
+      style={{
+        background: on ? 'var(--green)' : 'var(--fill)',
+      }}
+    >
+      <span
+        className="absolute top-[2px] left-[2px] h-[27px] w-[27px] rounded-full transition-transform"
+        style={{
+          background: '#FFFFFF',
+          transform: on ? 'translateX(20px)' : 'translateX(0)',
+          boxShadow: '0 3px 8px rgba(0,0,0,0.15), 0 1px 1px rgba(0,0,0,0.10)',
+        }}
+      />
+    </button>
+  );
+}
+
 /* ─── SegmentedControl ─────────────────────────────────── */
 export function Segmented<T extends string>({
   value, onChange, options,

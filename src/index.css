@@ -67,6 +67,37 @@
   --shadow-nav: 0 -0.5px 0 rgba(0, 0, 0, 0.08);
 }
 
+/* Explicit theme overrides — applied when user picks Light/Dark in Settings.
+   Forces the chosen palette regardless of the system preference. */
+:root[data-theme="light"] {
+  /* Same as default light tokens above — explicit so it wins over @media */
+  --bg: #FFFFFF; --bg-grouped: #F2F2F7; --bg-grouped-secondary: #FFFFFF;
+  --surface: #FFFFFF; --surface-elevated: #F2F2F7;
+  --fill: rgba(120,120,128,0.20); --fill-secondary: rgba(120,120,128,0.16);
+  --fill-tertiary: rgba(118,118,128,0.12); --fill-quaternary: rgba(116,116,128,0.08);
+  --label: #000000; --label-secondary: rgba(60,60,67,0.60);
+  --label-tertiary: rgba(60,60,67,0.30); --label-quaternary: rgba(60,60,67,0.18);
+  --separator: rgba(60,60,67,0.29); --separator-opaque: #C6C6C8;
+  --tint: #007AFF; --tint-secondary: rgba(0,122,255,0.10);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #000000; --bg-grouped: #000000; --bg-grouped-secondary: #1C1C1E;
+  --surface: #1C1C1E; --surface-elevated: #2C2C2E;
+  --fill: rgba(120,120,128,0.36); --fill-secondary: rgba(120,120,128,0.32);
+  --fill-tertiary: rgba(118,118,128,0.24); --fill-quaternary: rgba(118,118,128,0.18);
+  --label: #FFFFFF; --label-secondary: rgba(235,235,245,0.60);
+  --label-tertiary: rgba(235,235,245,0.30); --label-quaternary: rgba(235,235,245,0.18);
+  --separator: rgba(84,84,88,0.65); --separator-opaque: #38383A;
+  --tint: #0A84FF; --tint-secondary: rgba(10,132,255,0.18);
+  --red: #FF453A; --orange: #FF9F0A; --yellow: #FFD60A; --green: #32D74B;
+  --mint: #66D4CF; --teal: #6AC4DC; --cyan: #64D2FF; --blue: #0A84FF;
+  --indigo: #5E5CE6; --purple: #BF5AF2; --pink: #FF375F; --brown: #AC8E68;
+  --shadow-nav: 0 -0.5px 0 rgba(255,255,255,0.08);
+  color-scheme: dark;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #000000;

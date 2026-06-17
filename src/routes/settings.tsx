@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ListGroup, Row, Button, Card } from '@/ui/primitives';
+import { ListGroup, Row, Button, Card, Switch } from '@/ui/primitives';
 import { Icon } from '@/ui/Icon';
 import { getSettings, saveSettings, MODELS, type Provider } from '@/domain/grading';
 import { wipeAllData } from '@/auth/passcode';
+import { getTheme, setTheme, type ThemePref } from '@/domain/appearance';
+import { getNotifPrefs, saveNotifPrefs, permission, requestPermission, fireTest, scheduleDaily, type Permission } from '@/domain/notifications';
 
 export const Route = createFileRoute('/settings')({ component: Settings });
 
@@ -17,6 +19,40 @@ function Settings() {
   const [showOR, setShowOR] = useState(false);
   const [showGM, setShowGM] = useState(false);
   const [showOA, setShowOA] = useState(false);
+
+  // Appearance
+  const [theme, setThemeState] = useState<ThemePref>(() => getTheme());
+  function pickTheme(t: ThemePref) {
+    setThemeState(t);
+    setTheme(t);
+  }
+
+  // Notifications
+  const [notif, setNotif] = useState(() => getNotifPrefs());
+  const [perm, setPerm] = useState<Permission>(() => permission());
+  async function askPerm() {
+    const result = await requestPermission();
+    setPerm(result);
+    if (result === 'granted' && notif.enabled) scheduleDaily();
+  }
+  function toggleNotif(enabled: boolean) {
+    saveNotifPrefs({ enabled });
+    setNotif({ ...notif, enabled });
+    if (enabled && perm === 'granted') scheduleDaily();
+  }
+  function pickTime(reminderTime: string) {
+    saveNotifPrefs({ reminderTime });
+    setNotif({ ...notif, reminderTime });
+  }
+
+  // Honor a hash anchor when arriving from Profile → Appearance / Notifications
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
   const [saved, setSaved] = useState(false);
 
   const availableModels = MODELS.filter(m => m.provider === provider);
@@ -180,8 +216,82 @@ function Settings() {
         </div>
       </section>
 
+      {/* Appearance */}
+      <section id="appearance" className="px-4 mb-6 scroll-mt-20">
+        <div className="px-4 mb-1.5 ios-footnote uppercase tracking-wide" style={{ color: 'var(--label-secondary)' }}>Appearance</div>
+        <div className="ios-list">
+          <Row
+            leading={<Dot color={theme === 'system' ? 'var(--tint)' : 'transparent'} />}
+            title="System"
+            subtitle="Follow your iOS / macOS theme"
+            onClick={() => pickTheme('system')}
+          />
+          <Row
+            leading={<Dot color={theme === 'light' ? 'var(--tint)' : 'transparent'} />}
+            title="Light"
+            subtitle="Cream + black"
+            onClick={() => pickTheme('light')}
+          />
+          <Row
+            leading={<Dot color={theme === 'dark' ? 'var(--tint)' : 'transparent'} />}
+            title="Dark"
+            subtitle="OLED black + white"
+            onClick={() => pickTheme('dark')}
+          />
+        </div>
+      </section>
+
+      {/* Notifications */}
+      <section id="notifications" className="px-4 mb-6 scroll-mt-20">
+        <div className="px-4 mb-1.5 ios-footnote uppercase tracking-wide" style={{ color: 'var(--label-secondary)' }}>Notifications</div>
+        <Card>
+          {perm === 'unavailable' ? (
+            <div className="ios-body" style={{ color: 'var(--label-secondary)' }}>
+              Your browser does not support notifications. (Try installing as a PWA on your iPhone Home Screen.)
+            </div>
+          ) : perm === 'denied' ? (
+            <div className="ios-body" style={{ color: 'var(--red)' }}>
+              You blocked notifications for this site. Open browser settings → Notifications → allow this site, then come back.
+            </div>
+          ) : perm === 'default' ? (
+            <div>
+              <p className="ios-body mb-3" style={{ color: 'var(--label)' }}>
+                Get a daily reminder to lock in. Permission is required first.
+              </p>
+              <Button variant="filled" onClick={askPerm}>Enable notifications</Button>
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="ios-body" style={{ color: 'var(--label)' }}>Daily reminder</div>
+                <Switch
+                  on={notif.enabled}
+                  onChange={toggleNotif}
+                />
+              </div>
+              {notif.enabled && (
+                <div className="flex items-center justify-between mb-3">
+                  <div className="ios-body" style={{ color: 'var(--label)' }}>Time</div>
+                  <input
+                    type="time"
+                    value={notif.reminderTime}
+                    onChange={e => pickTime(e.target.value)}
+                    className="ios-body font-mono bg-transparent outline-none"
+                    style={{ color: 'var(--label)' }}
+                  />
+                </div>
+              )}
+              <Button variant="tinted" size="md" onClick={fireTest}>Test notification</Button>
+            </div>
+          )}
+        </Card>
+        <div className="px-4 mt-1.5 ios-footnote" style={{ color: 'var(--label-secondary)' }}>
+          v1 reminders fire only while the app is open. Background push (works when closed) needs a backend — coming later.
+        </div>
+      </section>
+
       <ListGroup header="About">
-        <Row title="Version" trailing="0.2.0 alpha" />
+        <Row title="Version" trailing="0.3.0 alpha" />
         <Row title="Storage" subtitle="Local (browser/device)" trailing="—" />
       </ListGroup>
 

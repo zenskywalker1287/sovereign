@@ -21,7 +21,9 @@ import { Route as BrainRouteImport } from './routes/brain'
 import { Route as ArchetypesRouteImport } from './routes/archetypes'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as NoteSplatRouteImport } from './routes/note.$'
+import { Route as FolderSplatRouteImport } from './routes/folder.$'
 import { Route as BrainHistoryRouteImport } from './routes/brain.history'
+import { Route as ArchetypesSlugRouteImport } from './routes/archetypes.$slug'
 import { Route as SpeechDrillIdRouteImport } from './routes/speech.drill.$id'
 import { Route as BrainStudioLaneRouteImport } from './routes/brain.studio.$lane'
 import { Route as BrainDrillIdRouteImport } from './routes/brain.drill.$id'
@@ -86,10 +88,20 @@ const NoteSplatRoute = NoteSplatRouteImport.update({
   path: '/note/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FolderSplatRoute = FolderSplatRouteImport.update({
+  id: '/folder/$',
+  path: '/folder/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrainHistoryRoute = BrainHistoryRouteImport.update({
   id: '/history',
   path: '/history',
   getParentRoute: () => BrainRoute,
+} as any)
+const ArchetypesSlugRoute = ArchetypesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ArchetypesRoute,
 } as any)
 const SpeechDrillIdRoute = SpeechDrillIdRouteImport.update({
   id: '/drill/$id',
@@ -109,7 +121,7 @@ const BrainDrillIdRoute = BrainDrillIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/archetypes': typeof ArchetypesRoute
+  '/archetypes': typeof ArchetypesRouteWithChildren
   '/brain': typeof BrainRouteWithChildren
   '/diet': typeof DietRoute
   '/journal': typeof JournalRoute
@@ -119,7 +131,9 @@ export interface FileRoutesByFullPath {
   '/speech': typeof SpeechRouteWithChildren
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
+  '/archetypes/$slug': typeof ArchetypesSlugRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
@@ -127,7 +141,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/archetypes': typeof ArchetypesRoute
+  '/archetypes': typeof ArchetypesRouteWithChildren
   '/brain': typeof BrainRouteWithChildren
   '/diet': typeof DietRoute
   '/journal': typeof JournalRoute
@@ -137,7 +151,9 @@ export interface FileRoutesByTo {
   '/speech': typeof SpeechRouteWithChildren
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
+  '/archetypes/$slug': typeof ArchetypesSlugRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
@@ -146,7 +162,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/archetypes': typeof ArchetypesRoute
+  '/archetypes': typeof ArchetypesRouteWithChildren
   '/brain': typeof BrainRouteWithChildren
   '/diet': typeof DietRoute
   '/journal': typeof JournalRoute
@@ -156,7 +172,9 @@ export interface FileRoutesById {
   '/speech': typeof SpeechRouteWithChildren
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
+  '/archetypes/$slug': typeof ArchetypesSlugRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
@@ -176,7 +194,9 @@ export interface FileRouteTypes {
     | '/speech'
     | '/surprise'
     | '/watch'
+    | '/archetypes/$slug'
     | '/brain/history'
+    | '/folder/$'
     | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
@@ -194,7 +214,9 @@ export interface FileRouteTypes {
     | '/speech'
     | '/surprise'
     | '/watch'
+    | '/archetypes/$slug'
     | '/brain/history'
+    | '/folder/$'
     | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
@@ -212,7 +234,9 @@ export interface FileRouteTypes {
     | '/speech'
     | '/surprise'
     | '/watch'
+    | '/archetypes/$slug'
     | '/brain/history'
+    | '/folder/$'
     | '/note/$'
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
@@ -221,7 +245,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ArchetypesRoute: typeof ArchetypesRoute
+  ArchetypesRoute: typeof ArchetypesRouteWithChildren
   BrainRoute: typeof BrainRouteWithChildren
   DietRoute: typeof DietRoute
   JournalRoute: typeof JournalRoute
@@ -231,6 +255,7 @@ export interface RootRouteChildren {
   SpeechRoute: typeof SpeechRouteWithChildren
   SurpriseRoute: typeof SurpriseRoute
   WatchRoute: typeof WatchRoute
+  FolderSplatRoute: typeof FolderSplatRoute
   NoteSplatRoute: typeof NoteSplatRoute
 }
 
@@ -320,12 +345,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NoteSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/folder/$': {
+      id: '/folder/$'
+      path: '/folder/$'
+      fullPath: '/folder/$'
+      preLoaderRoute: typeof FolderSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/brain/history': {
       id: '/brain/history'
       path: '/history'
       fullPath: '/brain/history'
       preLoaderRoute: typeof BrainHistoryRouteImport
       parentRoute: typeof BrainRoute
+    }
+    '/archetypes/$slug': {
+      id: '/archetypes/$slug'
+      path: '/$slug'
+      fullPath: '/archetypes/$slug'
+      preLoaderRoute: typeof ArchetypesSlugRouteImport
+      parentRoute: typeof ArchetypesRoute
     }
     '/speech/drill/$id': {
       id: '/speech/drill/$id'
@@ -350,6 +389,18 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface ArchetypesRouteChildren {
+  ArchetypesSlugRoute: typeof ArchetypesSlugRoute
+}
+
+const ArchetypesRouteChildren: ArchetypesRouteChildren = {
+  ArchetypesSlugRoute: ArchetypesSlugRoute,
+}
+
+const ArchetypesRouteWithChildren = ArchetypesRoute._addFileChildren(
+  ArchetypesRouteChildren,
+)
 
 interface BrainRouteChildren {
   BrainHistoryRoute: typeof BrainHistoryRoute
@@ -378,7 +429,7 @@ const SpeechRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ArchetypesRoute: ArchetypesRoute,
+  ArchetypesRoute: ArchetypesRouteWithChildren,
   BrainRoute: BrainRouteWithChildren,
   DietRoute: DietRoute,
   JournalRoute: JournalRoute,
@@ -388,6 +439,7 @@ const rootRouteChildren: RootRouteChildren = {
   SpeechRoute: SpeechRouteWithChildren,
   SurpriseRoute: SurpriseRoute,
   WatchRoute: WatchRoute,
+  FolderSplatRoute: FolderSplatRoute,
   NoteSplatRoute: NoteSplatRoute,
 }
 export const routeTree = rootRouteImport

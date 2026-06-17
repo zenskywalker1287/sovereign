@@ -3,7 +3,11 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { routeTree } from './routeTree.gen';
+import { applyTheme } from './domain/appearance';
 import './index.css';
+
+// Apply saved theme BEFORE first render to avoid a flash.
+applyTheme();
 
 const queryClient = new QueryClient({
   defaultOptions: {

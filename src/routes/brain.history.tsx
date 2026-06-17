@@ -65,20 +65,20 @@ function HistoryView() {
       {entries.length > 0 && (
         <ListGroup>
           {entries.map(e => (
-            <Row
-              key={e.path}
-              leading={
-                <div className="w-10 h-10 rounded-[8px] flex flex-col items-center justify-center"
-                     style={{ background: scoreBg(e.total, e.max), color: 'white' }}>
-                  <span className="ios-headline font-mono leading-none">{e.total}</span>
-                  <span className="ios-caption-2 leading-none mt-0.5">/{e.max}</span>
-                </div>
-              }
-              title={e.drill}
-              subtitle={`${e.date} · ${e.lane}${e.signatureName ? ` · ${e.signatureName}` : ''}`}
-              chevron
-              onClick={() => {}}
-            />
+            <Link key={e.path} to="/note/$" params={{ _splat: e.path }}>
+              <Row
+                leading={
+                  <div className="w-10 h-10 rounded-[8px] flex flex-col items-center justify-center"
+                       style={{ background: scoreBg(e.total, e.max), color: 'white' }}>
+                    <span className="ios-headline font-mono leading-none">{e.total}</span>
+                    <span className="ios-caption-2 leading-none mt-0.5">/{e.max}</span>
+                  </div>
+                }
+                title={e.drill}
+                subtitle={`${e.date} · ${e.lane}${e.signatureName ? ` · ${e.signatureName}` : ''}`}
+                chevron
+              />
+            </Link>
           ))}
         </ListGroup>
       )}

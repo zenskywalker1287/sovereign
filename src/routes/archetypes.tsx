@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { LargeTitle, ListGroup, Row, Card } from '@/ui/primitives';
 import { useStore, selectLevelForXp } from '@/domain/store';
 import { DEFAULT_ARCHETYPES } from '@/domain/archetypes';
@@ -28,33 +28,33 @@ function Archetypes() {
 
       <ListGroup>
         {ranked.map(a => (
-          <Row
-            key={a.slug}
-            leading={
-              <div className="w-11 h-11 rounded-[10px] flex items-center justify-center"
-                   style={{ background: 'var(--fill-tertiary)', color: 'var(--label)' }}>
-                <span className="ios-headline font-mono">{a.name.slice(0, 2).toUpperCase()}</span>
-              </div>
-            }
-            title={
-              <div className="flex items-baseline gap-2">
-                <span>{a.name}</span>
-                <span className="ios-footnote font-mono" style={{ color: 'var(--label-tertiary)' }}>LVL {a.level}</span>
-              </div>
-            }
-            subtitle={
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'var(--fill-tertiary)' }}>
-                  <div className="h-full rounded-full" style={{ width: `${(a.xpInLevel / a.xpToNext) * 100}%`, background: 'var(--tint)' }} />
+          <Link key={a.slug} to="/archetypes/$slug" params={{ slug: a.slug }}>
+            <Row
+              leading={
+                <div className="w-11 h-11 rounded-[10px] flex items-center justify-center"
+                     style={{ background: 'var(--fill-tertiary)', color: 'var(--label)' }}>
+                  <span className="ios-headline font-mono">{a.name.slice(0, 2).toUpperCase()}</span>
                 </div>
-                <span className="ios-caption-1 font-mono" style={{ color: 'var(--label-secondary)' }}>
-                  {a.xpInLevel.toLocaleString()} / {a.xpToNext.toLocaleString()}
-                </span>
-              </div>
-            }
-            chevron
-            onClick={() => {}}
-          />
+              }
+              title={
+                <div className="flex items-baseline gap-2">
+                  <span>{a.name}</span>
+                  <span className="ios-footnote font-mono" style={{ color: 'var(--label-tertiary)' }}>LVL {a.level}</span>
+                </div>
+              }
+              subtitle={
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'var(--fill-tertiary)' }}>
+                    <div className="h-full rounded-full" style={{ width: `${(a.xpInLevel / a.xpToNext) * 100}%`, background: 'var(--tint)' }} />
+                  </div>
+                  <span className="ios-caption-1 font-mono" style={{ color: 'var(--label-secondary)' }}>
+                    {a.xpInLevel.toLocaleString()} / {a.xpToNext.toLocaleString()}
+                  </span>
+                </div>
+              }
+              chevron
+            />
+          </Link>
         ))}
       </ListGroup>
 
