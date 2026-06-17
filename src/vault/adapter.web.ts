@@ -14,6 +14,27 @@ const SAMPLE: Record<string, string> = {
 };
 const LS_KEY = 'sovereign.vault.web.v1';
 
+// Files we ship statically in /public/sample-vault — used for read-only fallback
+// so the note reader works in the browser even before the user has a real vault wired.
+const STATIC_SAMPLE_PATHS = new Set([
+  '_OBSIDIAN-DASHBOARD.md',
+  '_OBSIDIAN-SETUP.md',
+  '_TAGS.md',
+  '01-CRAFT/speech-training.md',
+  '01-CRAFT/writing/authors/gary-halbert.md',
+  '01-CRAFT/writing/authors/stephenie-meyer.md',
+]);
+
+async function fetchStatic(path: string): Promise<string | null> {
+  if (!STATIC_SAMPLE_PATHS.has(path)) return null;
+  try {
+    const url = `${import.meta.env.BASE_URL}sample-vault/${path}`;
+    const resp = await fetch(url);
+    if (!resp.ok) return null;
+    return await resp.text();
+  } catch { return null; }
+}
+
 function loadFromLocalStorage(): Record<string, string> {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -32,17 +53,23 @@ export class WebAdapter implements VaultAdapter {
   }
   async list(folder: string): Promise<string[]> {
     const prefix = folder.endsWith('/') ? folder : folder + '/';
-    return Object.keys(this.store).filter(p => p.startsWith(prefix));
+    const local = Object.keys(this.store).filter(p => p.startsWith(prefix));
+    const staticOnes = [...STATIC_SAMPLE_PATHS].filter(p => p.startsWith(prefix));
+    return [...new Set([...local, ...staticOnes])].sort();
   }
   async read(path: string): Promise<string> {
-    if (!(path in this.store)) throw new Error(`Not found: ${path}`);
-    return this.store[path];
+    if (path in this.store) return this.store[path];
+    const staticContent = await fetchStatic(path);
+    if (staticContent !== null) return staticContent;
+    throw new Error(`Not found: ${path}`);
   }
   async write(path: string, content: string): Promise<void> {
     this.store[path] = content;
     persist(this.store);
   }
   async exists(path: string): Promise<boolean> {
-    return path in this.store;
+    if (path in this.store) return true;
+    if (STATIC_SAMPLE_PATHS.has(path)) return (await fetchStatic(path)) !== null;
+    return false;
   }
 }

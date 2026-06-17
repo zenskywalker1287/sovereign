@@ -18,6 +18,11 @@ const todayKey = () => new Date().toISOString().slice(0, 10);
 
 export interface MissionCheckMap { [missionId: string]: boolean }
 
+// Stable module-scope empty references. Returning a fresh `{}` from a Zustand
+// selector each render breaks reference equality and triggers an infinite render
+// loop ("Maximum update depth exceeded"). Use these constants instead.
+const EMPTY_CHECKS: MissionCheckMap = Object.freeze({});
+
 interface SovereignState {
   /* persisted */
   profile: { name: string; joinedAt: string };
@@ -76,7 +81,7 @@ export const useStore = create<SovereignState>()(
 
       todayMissions: () => DEFAULT_DAILY_MISSIONS,
 
-      todayChecks: () => get().missionChecks[todayKey()] ?? {},
+      todayChecks: () => get().missionChecks[todayKey()] ?? EMPTY_CHECKS,
 
       awardDrillCompletion: ({ archetype, xp, words }) => {
         set((s) => ({

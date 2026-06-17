@@ -24,7 +24,7 @@ import { Route as NoteSplatRouteImport } from './routes/note.$'
 import { Route as FolderSplatRouteImport } from './routes/folder.$'
 import { Route as BrainHistoryRouteImport } from './routes/brain/history'
 import { Route as ArchetypesSlugRouteImport } from './routes/archetypes/$slug'
-import { Route as SpeechDrillIdRouteImport } from './routes/speech/drill.$id'
+import { Route as SpeechDrillIdRouteImport } from './routes/speech.drill.$id'
 import { Route as BrainStudioLaneRouteImport } from './routes/brain/studio.$lane'
 import { Route as BrainDrillIdRouteImport } from './routes/brain/drill.$id'
 
@@ -104,9 +104,9 @@ const ArchetypesSlugRoute = ArchetypesSlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const SpeechDrillIdRoute = SpeechDrillIdRouteImport.update({
-  id: '/speech/drill/$id',
-  path: '/speech/drill/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/drill/$id',
+  path: '/drill/$id',
+  getParentRoute: () => SpeechRoute,
 } as any)
 const BrainStudioLaneRoute = BrainStudioLaneRouteImport.update({
   id: '/brain/studio/$lane',
@@ -261,7 +261,6 @@ export interface RootRouteChildren {
   SpeechIndexRoute: typeof SpeechIndexRoute
   BrainDrillIdRoute: typeof BrainDrillIdRoute
   BrainStudioLaneRoute: typeof BrainStudioLaneRoute
-  SpeechDrillIdRoute: typeof SpeechDrillIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -373,10 +372,10 @@ declare module '@tanstack/react-router' {
     }
     '/speech/drill/$id': {
       id: '/speech/drill/$id'
-      path: '/speech/drill/$id'
+      path: '/drill/$id'
       fullPath: '/speech/drill/$id'
       preLoaderRoute: typeof SpeechDrillIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SpeechRoute
     }
     '/brain/studio/$lane': {
       id: '/brain/studio/$lane'
@@ -413,7 +412,6 @@ const rootRouteChildren: RootRouteChildren = {
   SpeechIndexRoute: SpeechIndexRoute,
   BrainDrillIdRoute: BrainDrillIdRoute,
   BrainStudioLaneRoute: BrainStudioLaneRoute,
-  SpeechDrillIdRoute: SpeechDrillIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

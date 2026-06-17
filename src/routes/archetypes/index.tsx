@@ -3,7 +3,7 @@ import { LargeTitle, ListGroup, Row, Card } from '@/ui/primitives';
 import { useStore, selectLevelForXp } from '@/domain/store';
 import { DEFAULT_ARCHETYPES } from '@/domain/archetypes';
 
-export const Route = createFileRoute('/archetypes')({ component: Archetypes });
+export const Route = createFileRoute('/archetypes/')({ component: Archetypes });
 
 function Archetypes() {
   const archetypeXp = useStore(s => s.archetypeXp);

@@ -3,7 +3,7 @@ import { LargeTitle, ListGroup, Row, Card } from '@/ui/primitives';
 import { Icon } from '@/ui/Icon';
 import { SPEECH_DRILLS, SKILL_LABELS, type SpeechSkill } from '@/domain/speech-drills';
 
-export const Route = createFileRoute('/speech')({ component: Speech });
+export const Route = createFileRoute('/speech/')({ component: Speech });
 
 function Speech() {
   // Group drills by skill, render each skill as a section
@@ -33,11 +33,13 @@ function Speech() {
           </div>
           <p className="ios-body mt-3" style={{ color: 'var(--label)' }}>{todays.technique}</p>
           <div className="mt-4">
-            <Link to="/speech/drill/$id" params={{ id: todays.id }}>
-              <button className="h-[44px] px-5 rounded-[12px] ios-headline active:opacity-70"
-                      style={{ background: 'var(--tint)', color: 'white' }}>
-                Start →
-              </button>
+            <Link
+              to="/speech/drill/$id"
+              params={{ id: todays.id }}
+              className="inline-flex items-center h-[44px] px-5 rounded-[12px] ios-headline active:opacity-70 no-select"
+              style={{ background: 'var(--tint)', color: 'white' }}
+            >
+              Start →
             </Link>
           </div>
         </Card>

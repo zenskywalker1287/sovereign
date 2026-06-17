@@ -4,7 +4,7 @@ import { LargeTitle, ListGroup, Row, Card } from '@/ui/primitives';
 import { Icon } from '@/ui/Icon';
 import { listGraded } from '@/features/writing-studio/history';
 
-export const Route = createFileRoute('/brain')({ component: Brain });
+export const Route = createFileRoute('/brain/')({ component: Brain });
 
 function Brain() {
   const { data } = useQuery({ queryKey: ['graded'], queryFn: listGraded });
