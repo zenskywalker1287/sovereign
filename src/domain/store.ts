@@ -38,6 +38,10 @@ interface SovereignState {
     lastActiveDate: string | null;  // yyyy-mm-dd
   };
   voltageLog: { date: string; activity: string; voltage: number; notes?: string }[];
+  /** Per-speech-drill completion log. Key = speech drill id, value = total times done. */
+  speechProgress: { [drillId: string]: number };
+  /** Last date the user completed any speech drill — for streak math. */
+  speechLastDate: string | null;
   customTasks: CustomTask[];
   /** Keyed by `periodKey(scope)` like 'd-2026-06-17', 'w-2026-W25', 'm-2026-06'. */
   customTaskChecks: { [periodKey: string]: { [taskId: string]: boolean } };
@@ -58,6 +62,8 @@ interface SovereignState {
   isCustomTaskDone: (id: string) => boolean;
   /** Read tasks for a scope. */
   tasksOfScope: (scope: TaskScope) => CustomTask[];
+  /** Speech drill completion — also awards XP to Leader. */
+  completeSpeechDrill: (drillId: string, xp?: number) => void;
 }
 
 const EMPTY_TASK_CHECKS: { [taskId: string]: boolean } = Object.freeze({});
@@ -66,12 +72,15 @@ const initial = (): Omit<SovereignState,
   | 'toggleMission' | 'isMissionDone' | 'todayMissions' | 'todayChecks'
   | 'awardDrillCompletion' | 'tickActivity' | 'recordVoltage' | 'resetAll'
   | 'addCustomTask' | 'removeCustomTask' | 'toggleCustomTask' | 'isCustomTaskDone' | 'tasksOfScope'
+  | 'completeSpeechDrill'
 > => ({
   profile: { name: 'Zatreides', joinedAt: todayKey() },
   missionChecks: {},
   archetypeXp: DEFAULT_ARCHETYPES.reduce((acc, a) => ({ ...acc, [a.slug]: a.seedXp ?? 0 }), {} as Record<ArchetypeSlug, number>),
   stats: { lifetimeXp: 0, drillsCompleted: 0, wordsWritten: 0, currentStreak: 0, longestStreak: 0, lastActiveDate: null },
   voltageLog: [],
+  speechProgress: {},
+  speechLastDate: null,
   customTasks: [],
   customTaskChecks: {},
 });
@@ -210,6 +219,21 @@ export const useStore = create<SovereignState>()(
       },
 
       tasksOfScope: (scope) => get().customTasks.filter(t => t.scope === scope),
+
+      completeSpeechDrill: (drillId, xp = 50) => {
+        const today = todayKey();
+        set((s) => ({
+          speechProgress: { ...s.speechProgress, [drillId]: (s.speechProgress[drillId] ?? 0) + 1 },
+          speechLastDate: today,
+          archetypeXp: { ...s.archetypeXp, leader: (s.archetypeXp.leader ?? 0) + xp },
+          stats: {
+            ...s.stats,
+            lifetimeXp: s.stats.lifetimeXp + xp,
+            drillsCompleted: s.stats.drillsCompleted + 1,
+          },
+        }));
+        get().tickActivity();
+      },
     }),
     {
       name: 'sovereign.store.v1',
@@ -220,6 +244,8 @@ export const useStore = create<SovereignState>()(
         archetypeXp: s.archetypeXp,
         stats: s.stats,
         voltageLog: s.voltageLog,
+        speechProgress: s.speechProgress,
+        speechLastDate: s.speechLastDate,
         customTasks: s.customTasks,
         customTaskChecks: s.customTaskChecks,
       }),

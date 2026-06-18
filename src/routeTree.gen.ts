@@ -23,8 +23,12 @@ import { Route as SpeechIndexRouteImport } from './routes/speech/index'
 import { Route as BrainIndexRouteImport } from './routes/brain/index'
 import { Route as ArchetypesIndexRouteImport } from './routes/archetypes/index'
 import { Route as TasksNewRouteImport } from './routes/tasks.new'
+import { Route as SpeechRulesRouteImport } from './routes/speech/rules'
+import { Route as SpeechProblemsRouteImport } from './routes/speech/problems'
+import { Route as SpeechMonologueRouteImport } from './routes/speech/monologue'
 import { Route as NoteSplatRouteImport } from './routes/note.$'
 import { Route as FolderSplatRouteImport } from './routes/folder.$'
+import { Route as ChatPersonaRouteImport } from './routes/chat.$persona'
 import { Route as BrainHistoryRouteImport } from './routes/brain/history'
 import { Route as ArchetypesSlugRouteImport } from './routes/archetypes/$slug'
 import { Route as SpeechDrillIdRouteImport } from './routes/speech/drill.$id'
@@ -101,6 +105,21 @@ const TasksNewRoute = TasksNewRouteImport.update({
   path: '/tasks/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SpeechRulesRoute = SpeechRulesRouteImport.update({
+  id: '/speech/rules',
+  path: '/speech/rules',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpeechProblemsRoute = SpeechProblemsRouteImport.update({
+  id: '/speech/problems',
+  path: '/speech/problems',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpeechMonologueRoute = SpeechMonologueRouteImport.update({
+  id: '/speech/monologue',
+  path: '/speech/monologue',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NoteSplatRoute = NoteSplatRouteImport.update({
   id: '/note/$',
   path: '/note/$',
@@ -109,6 +128,11 @@ const NoteSplatRoute = NoteSplatRouteImport.update({
 const FolderSplatRoute = FolderSplatRouteImport.update({
   id: '/folder/$',
   path: '/folder/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatPersonaRoute = ChatPersonaRouteImport.update({
+  id: '/chat/$persona',
+  path: '/chat/$persona',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrainHistoryRoute = BrainHistoryRouteImport.update({
@@ -149,8 +173,12 @@ export interface FileRoutesByFullPath {
   '/watch': typeof WatchRoute
   '/archetypes/$slug': typeof ArchetypesSlugRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/chat/$persona': typeof ChatPersonaRoute
   '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
+  '/speech/monologue': typeof SpeechMonologueRoute
+  '/speech/problems': typeof SpeechProblemsRoute
+  '/speech/rules': typeof SpeechRulesRoute
   '/tasks/new': typeof TasksNewRoute
   '/archetypes/': typeof ArchetypesIndexRoute
   '/brain/': typeof BrainIndexRoute
@@ -172,8 +200,12 @@ export interface FileRoutesByTo {
   '/watch': typeof WatchRoute
   '/archetypes/$slug': typeof ArchetypesSlugRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/chat/$persona': typeof ChatPersonaRoute
   '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
+  '/speech/monologue': typeof SpeechMonologueRoute
+  '/speech/problems': typeof SpeechProblemsRoute
+  '/speech/rules': typeof SpeechRulesRoute
   '/tasks/new': typeof TasksNewRoute
   '/archetypes': typeof ArchetypesIndexRoute
   '/brain': typeof BrainIndexRoute
@@ -196,8 +228,12 @@ export interface FileRoutesById {
   '/watch': typeof WatchRoute
   '/archetypes/$slug': typeof ArchetypesSlugRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/chat/$persona': typeof ChatPersonaRoute
   '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
+  '/speech/monologue': typeof SpeechMonologueRoute
+  '/speech/problems': typeof SpeechProblemsRoute
+  '/speech/rules': typeof SpeechRulesRoute
   '/tasks/new': typeof TasksNewRoute
   '/archetypes/': typeof ArchetypesIndexRoute
   '/brain/': typeof BrainIndexRoute
@@ -221,8 +257,12 @@ export interface FileRouteTypes {
     | '/watch'
     | '/archetypes/$slug'
     | '/brain/history'
+    | '/chat/$persona'
     | '/folder/$'
     | '/note/$'
+    | '/speech/monologue'
+    | '/speech/problems'
+    | '/speech/rules'
     | '/tasks/new'
     | '/archetypes/'
     | '/brain/'
@@ -244,8 +284,12 @@ export interface FileRouteTypes {
     | '/watch'
     | '/archetypes/$slug'
     | '/brain/history'
+    | '/chat/$persona'
     | '/folder/$'
     | '/note/$'
+    | '/speech/monologue'
+    | '/speech/problems'
+    | '/speech/rules'
     | '/tasks/new'
     | '/archetypes'
     | '/brain'
@@ -267,8 +311,12 @@ export interface FileRouteTypes {
     | '/watch'
     | '/archetypes/$slug'
     | '/brain/history'
+    | '/chat/$persona'
     | '/folder/$'
     | '/note/$'
+    | '/speech/monologue'
+    | '/speech/problems'
+    | '/speech/rules'
     | '/tasks/new'
     | '/archetypes/'
     | '/brain/'
@@ -291,8 +339,12 @@ export interface RootRouteChildren {
   WatchRoute: typeof WatchRoute
   ArchetypesSlugRoute: typeof ArchetypesSlugRoute
   BrainHistoryRoute: typeof BrainHistoryRoute
+  ChatPersonaRoute: typeof ChatPersonaRoute
   FolderSplatRoute: typeof FolderSplatRoute
   NoteSplatRoute: typeof NoteSplatRoute
+  SpeechMonologueRoute: typeof SpeechMonologueRoute
+  SpeechProblemsRoute: typeof SpeechProblemsRoute
+  SpeechRulesRoute: typeof SpeechRulesRoute
   TasksNewRoute: typeof TasksNewRoute
   ArchetypesIndexRoute: typeof ArchetypesIndexRoute
   BrainIndexRoute: typeof BrainIndexRoute
@@ -403,6 +455,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TasksNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/speech/rules': {
+      id: '/speech/rules'
+      path: '/speech/rules'
+      fullPath: '/speech/rules'
+      preLoaderRoute: typeof SpeechRulesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/speech/problems': {
+      id: '/speech/problems'
+      path: '/speech/problems'
+      fullPath: '/speech/problems'
+      preLoaderRoute: typeof SpeechProblemsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/speech/monologue': {
+      id: '/speech/monologue'
+      path: '/speech/monologue'
+      fullPath: '/speech/monologue'
+      preLoaderRoute: typeof SpeechMonologueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/note/$': {
       id: '/note/$'
       path: '/note/$'
@@ -415,6 +488,13 @@ declare module '@tanstack/react-router' {
       path: '/folder/$'
       fullPath: '/folder/$'
       preLoaderRoute: typeof FolderSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat/$persona': {
+      id: '/chat/$persona'
+      path: '/chat/$persona'
+      fullPath: '/chat/$persona'
+      preLoaderRoute: typeof ChatPersonaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brain/history': {
@@ -467,8 +547,12 @@ const rootRouteChildren: RootRouteChildren = {
   WatchRoute: WatchRoute,
   ArchetypesSlugRoute: ArchetypesSlugRoute,
   BrainHistoryRoute: BrainHistoryRoute,
+  ChatPersonaRoute: ChatPersonaRoute,
   FolderSplatRoute: FolderSplatRoute,
   NoteSplatRoute: NoteSplatRoute,
+  SpeechMonologueRoute: SpeechMonologueRoute,
+  SpeechProblemsRoute: SpeechProblemsRoute,
+  SpeechRulesRoute: SpeechRulesRoute,
   TasksNewRoute: TasksNewRoute,
   ArchetypesIndexRoute: ArchetypesIndexRoute,
   BrainIndexRoute: BrainIndexRoute,

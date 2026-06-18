@@ -11,7 +11,7 @@ function SpeechDrillView() {
   const { id } = useParams({ from: '/speech/drill/$id' });
   const drill = speechDrillById(id);
   const navigate = useNavigate();
-  const awardDrillCompletion = useStore(s => s.awardDrillCompletion);
+  const completeSpeechDrill = useStore(s => s.completeSpeechDrill);
 
   const [seconds, setSeconds] = useState((drill?.minutes ?? 5) * 60);
   const [running, setRunning] = useState(false);
@@ -49,9 +49,8 @@ function SpeechDrillView() {
   const progressPct = ((totalSecs - seconds) / totalSecs) * 100;
 
   function complete() {
-    // Speech drills award a flat 50 XP to the Leader archetype.
-    // No grading (yet) — completion is the bar.
-    awardDrillCompletion({ archetype: 'leader', xp: 50, words: 0 });
+    // Speech drills award 50 XP to Leader + log per-drill completion for stats.
+    completeSpeechDrill(drill!.id, 50);
     setDone(true);
     setTimeout(() => navigate({ to: '/speech' }), 800);
   }
@@ -105,6 +104,24 @@ function SpeechDrillView() {
             border: '0.5px solid var(--separator)',
           }}
         />
+
+        {/* Chat with coach about this drill */}
+        <div className="mt-5">
+          <Link to="/chat/$persona" params={{ persona: 'speech-coach' }} search={{ name: undefined }}>
+            <div className="rounded-[12px] p-3 flex items-center gap-3 active:opacity-80"
+                 style={{ background: 'var(--bg-grouped-secondary)' }}>
+              <div className="w-9 h-9 rounded-[9px] flex items-center justify-center"
+                   style={{ background: 'var(--tint)', color: 'white' }}>
+                <Icon name="brain" size={18} />
+              </div>
+              <div className="flex-1">
+                <div className="ios-headline" style={{ color: 'var(--label)' }}>Stuck? Ask the coach</div>
+                <div className="ios-footnote" style={{ color: 'var(--label-secondary)' }}>Targeted feedback on this drill</div>
+              </div>
+              <Icon name="chevron-right" size={16} />
+            </div>
+          </Link>
+        </div>
       </div>
 
       {/* Footer CTA */}

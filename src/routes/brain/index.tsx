@@ -60,13 +60,19 @@ function Train() {
         </Link>
       </section>
 
-      {/* Bootcamps */}
-      <ListGroup header="Author bootcamps" footer="Read first. Drill against the rubric.">
+      {/* Bootcamps — read the note OR chat with the author */}
+      <ListGroup header="Author bootcamps" footer="Read the bootcamp · or chat with the author for live coaching.">
         <Link to="/note/$" params={{ _splat: '01-CRAFT/writing/authors/gary-halbert.md' }}>
-          <Row leading={<TileIcon name="flame" color="var(--red)" />}    title="Gary Halbert"    subtitle="Copy" chevron />
+          <Row leading={<TileIcon name="flame" color="var(--red)" />}    title="Halbert — read"    subtitle="Copy bootcamp + signature rubric" chevron />
+        </Link>
+        <Link to="/chat/$persona" params={{ persona: 'halbert' }} search={{ name: undefined }}>
+          <Row leading={<TileIcon name="brain" color="var(--red)" />}    title="Chat with Halbert" subtitle="Live coaching in his voice" chevron />
         </Link>
         <Link to="/note/$" params={{ _splat: '01-CRAFT/writing/authors/stephenie-meyer.md' }}>
-          <Row leading={<TileIcon name="book" color="var(--purple)" />}  title="Stephenie Meyer" subtitle="Fiction" chevron />
+          <Row leading={<TileIcon name="book" color="var(--purple)" />}  title="Meyer — read" subtitle="Fiction bootcamp + signature rubric" chevron />
+        </Link>
+        <Link to="/chat/$persona" params={{ persona: 'meyer' }} search={{ name: undefined }}>
+          <Row leading={<TileIcon name="brain" color="var(--purple)" />} title="Chat with Meyer" subtitle="Live coaching on interiority + craft" chevron />
         </Link>
       </ListGroup>
 
