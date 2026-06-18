@@ -13,6 +13,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { DEFAULT_DAILY_MISSIONS, type DailyMission } from './missions';
 import { DEFAULT_ARCHETYPES, type ArchetypeSlug, xpForLevel, levelForXp } from './archetypes';
+import { type CustomTask, type TaskScope, newTaskId, periodKey } from './tasks';
 
 const todayKey = () => new Date().toISOString().slice(0, 10);
 
@@ -26,7 +27,7 @@ const EMPTY_CHECKS: MissionCheckMap = Object.freeze({});
 interface SovereignState {
   /* persisted */
   profile: { name: string; joinedAt: string };
-  missionChecks: { [yyyymmdd: string]: MissionCheckMap };  // per-day completion
+  missionChecks: { [yyyymmdd: string]: MissionCheckMap };  // per-day completion of DEFAULT missions
   archetypeXp: Record<ArchetypeSlug, number>;
   stats: {
     lifetimeXp: number;
@@ -37,6 +38,9 @@ interface SovereignState {
     lastActiveDate: string | null;  // yyyy-mm-dd
   };
   voltageLog: { date: string; activity: string; voltage: number; notes?: string }[];
+  customTasks: CustomTask[];
+  /** Keyed by `periodKey(scope)` like 'd-2026-06-17', 'w-2026-W25', 'm-2026-06'. */
+  customTaskChecks: { [periodKey: string]: { [taskId: string]: boolean } };
 
   /* actions */
   toggleMission: (missionId: string) => void;
@@ -44,20 +48,32 @@ interface SovereignState {
   todayMissions: () => DailyMission[];
   todayChecks: () => MissionCheckMap;
   awardDrillCompletion: (input: { archetype: ArchetypeSlug; xp: number; words: number }) => void;
-  tickActivity: () => void; // bumps streak / lastActiveDate when user does something meaningful
+  tickActivity: () => void;
   recordVoltage: (activity: string, voltage: number, notes?: string) => void;
   resetAll: () => void;
+  /* custom-task actions */
+  addCustomTask: (input: { title: string; scope: TaskScope; xp?: number; archetype?: ArchetypeSlug; subtitle?: string }) => CustomTask;
+  removeCustomTask: (id: string) => void;
+  toggleCustomTask: (id: string) => void;
+  isCustomTaskDone: (id: string) => boolean;
+  /** Read tasks for a scope. */
+  tasksOfScope: (scope: TaskScope) => CustomTask[];
 }
+
+const EMPTY_TASK_CHECKS: { [taskId: string]: boolean } = Object.freeze({});
 
 const initial = (): Omit<SovereignState,
   | 'toggleMission' | 'isMissionDone' | 'todayMissions' | 'todayChecks'
   | 'awardDrillCompletion' | 'tickActivity' | 'recordVoltage' | 'resetAll'
+  | 'addCustomTask' | 'removeCustomTask' | 'toggleCustomTask' | 'isCustomTaskDone' | 'tasksOfScope'
 > => ({
   profile: { name: 'Zatreides', joinedAt: todayKey() },
   missionChecks: {},
   archetypeXp: DEFAULT_ARCHETYPES.reduce((acc, a) => ({ ...acc, [a.slug]: a.seedXp ?? 0 }), {} as Record<ArchetypeSlug, number>),
   stats: { lifetimeXp: 0, drillsCompleted: 0, wordsWritten: 0, currentStreak: 0, longestStreak: 0, lastActiveDate: null },
   voltageLog: [],
+  customTasks: [],
+  customTaskChecks: {},
 });
 
 export const useStore = create<SovereignState>()(
@@ -129,6 +145,71 @@ export const useStore = create<SovereignState>()(
       },
 
       resetAll: () => set(() => ({ ...initial() })),
+
+      /* ────────────── Custom tasks ────────────── */
+
+      addCustomTask: ({ title, scope, xp = 25, archetype = 'executor', subtitle }) => {
+        const t: CustomTask = {
+          id: newTaskId(),
+          title: title.trim(),
+          subtitle: subtitle?.trim() || undefined,
+          scope,
+          xp,
+          archetype,
+          createdAt: todayKey(),
+        };
+        set((s) => ({ customTasks: [...s.customTasks, t] }));
+        return t;
+      },
+
+      removeCustomTask: (id) => {
+        set((s) => {
+          // Drop the task + clean any check entries pointing at it.
+          const customTasks = s.customTasks.filter(t => t.id !== id);
+          const customTaskChecks: SovereignState['customTaskChecks'] = {};
+          for (const [k, map] of Object.entries(s.customTaskChecks)) {
+            const next: { [id: string]: boolean } = {};
+            for (const [tid, v] of Object.entries(map)) if (tid !== id) next[tid] = v;
+            if (Object.keys(next).length) customTaskChecks[k] = next;
+          }
+          return { customTasks, customTaskChecks };
+        });
+      },
+
+      toggleCustomTask: (id) => {
+        const task = get().customTasks.find(t => t.id === id);
+        if (!task) return;
+        const key = periodKey(task.scope);
+        const wasDone = !!get().customTaskChecks[key]?.[id];
+        set((s) => {
+          const cur = { ...(s.customTaskChecks[key] ?? {}) };
+          if (wasDone) delete cur[id];
+          else cur[id] = true;
+          return { customTaskChecks: { ...s.customTaskChecks, [key]: cur } };
+        });
+        if (!wasDone) {
+          // Newly completed → award XP to mapped archetype.
+          set((s) => ({
+            archetypeXp: { ...s.archetypeXp, [task.archetype]: (s.archetypeXp[task.archetype] ?? 0) + task.xp },
+            stats: { ...s.stats, lifetimeXp: s.stats.lifetimeXp + task.xp },
+          }));
+        } else {
+          // Un-checking — reverse the XP grant.
+          set((s) => ({
+            archetypeXp: { ...s.archetypeXp, [task.archetype]: Math.max(0, (s.archetypeXp[task.archetype] ?? 0) - task.xp) },
+            stats: { ...s.stats, lifetimeXp: Math.max(0, s.stats.lifetimeXp - task.xp) },
+          }));
+        }
+        get().tickActivity();
+      },
+
+      isCustomTaskDone: (id) => {
+        const task = get().customTasks.find(t => t.id === id);
+        if (!task) return false;
+        return !!get().customTaskChecks[periodKey(task.scope)]?.[id];
+      },
+
+      tasksOfScope: (scope) => get().customTasks.filter(t => t.scope === scope),
     }),
     {
       name: 'sovereign.store.v1',
@@ -139,6 +220,8 @@ export const useStore = create<SovereignState>()(
         archetypeXp: s.archetypeXp,
         stats: s.stats,
         voltageLog: s.voltageLog,
+        customTasks: s.customTasks,
+        customTaskChecks: s.customTaskChecks,
       }),
       // Bumping `version` discards any older persisted state — anyone loading the
       // app picks up fresh zeros. Bump again for any future state-shape change.
