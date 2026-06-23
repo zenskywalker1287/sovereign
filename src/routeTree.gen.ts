@@ -29,11 +29,15 @@ import { Route as SpeechMonologueRouteImport } from './routes/speech/monologue'
 import { Route as NoteSplatRouteImport } from './routes/note.$'
 import { Route as FolderSplatRouteImport } from './routes/folder.$'
 import { Route as ChatPersonaRouteImport } from './routes/chat.$persona'
+import { Route as BrainSpeechCourseRouteImport } from './routes/brain/speech-course'
 import { Route as BrainHistoryRouteImport } from './routes/brain/history'
+import { Route as BrainFictionRouteImport } from './routes/brain/fiction'
+import { Route as BrainCopyRouteImport } from './routes/brain/copy'
 import { Route as ArchetypesSlugRouteImport } from './routes/archetypes/$slug'
 import { Route as SpeechDrillIdRouteImport } from './routes/speech/drill.$id'
 import { Route as BrainStudioLaneRouteImport } from './routes/brain/studio.$lane'
 import { Route as BrainDrillIdRouteImport } from './routes/brain/drill.$id'
+import { Route as BrainChallengeCourseIdChallengeIdRouteImport } from './routes/brain/challenge.$courseId.$challengeId'
 
 const WatchRoute = WatchRouteImport.update({
   id: '/watch',
@@ -135,9 +139,24 @@ const ChatPersonaRoute = ChatPersonaRouteImport.update({
   path: '/chat/$persona',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BrainSpeechCourseRoute = BrainSpeechCourseRouteImport.update({
+  id: '/brain/speech-course',
+  path: '/brain/speech-course',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BrainHistoryRoute = BrainHistoryRouteImport.update({
   id: '/brain/history',
   path: '/brain/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrainFictionRoute = BrainFictionRouteImport.update({
+  id: '/brain/fiction',
+  path: '/brain/fiction',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrainCopyRoute = BrainCopyRouteImport.update({
+  id: '/brain/copy',
+  path: '/brain/copy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchetypesSlugRoute = ArchetypesSlugRouteImport.update({
@@ -160,6 +179,12 @@ const BrainDrillIdRoute = BrainDrillIdRouteImport.update({
   path: '/brain/drill/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BrainChallengeCourseIdChallengeIdRoute =
+  BrainChallengeCourseIdChallengeIdRouteImport.update({
+    id: '/brain/challenge/$courseId/$challengeId',
+    path: '/brain/challenge/$courseId/$challengeId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -172,7 +197,10 @@ export interface FileRoutesByFullPath {
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
   '/archetypes/$slug': typeof ArchetypesSlugRoute
+  '/brain/copy': typeof BrainCopyRoute
+  '/brain/fiction': typeof BrainFictionRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/brain/speech-course': typeof BrainSpeechCourseRoute
   '/chat/$persona': typeof ChatPersonaRoute
   '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
@@ -187,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
   '/speech/drill/$id': typeof SpeechDrillIdRoute
+  '/brain/challenge/$courseId/$challengeId': typeof BrainChallengeCourseIdChallengeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -199,7 +228,10 @@ export interface FileRoutesByTo {
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
   '/archetypes/$slug': typeof ArchetypesSlugRoute
+  '/brain/copy': typeof BrainCopyRoute
+  '/brain/fiction': typeof BrainFictionRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/brain/speech-course': typeof BrainSpeechCourseRoute
   '/chat/$persona': typeof ChatPersonaRoute
   '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
@@ -214,6 +246,7 @@ export interface FileRoutesByTo {
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
   '/speech/drill/$id': typeof SpeechDrillIdRoute
+  '/brain/challenge/$courseId/$challengeId': typeof BrainChallengeCourseIdChallengeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -227,7 +260,10 @@ export interface FileRoutesById {
   '/surprise': typeof SurpriseRoute
   '/watch': typeof WatchRoute
   '/archetypes/$slug': typeof ArchetypesSlugRoute
+  '/brain/copy': typeof BrainCopyRoute
+  '/brain/fiction': typeof BrainFictionRoute
   '/brain/history': typeof BrainHistoryRoute
+  '/brain/speech-course': typeof BrainSpeechCourseRoute
   '/chat/$persona': typeof ChatPersonaRoute
   '/folder/$': typeof FolderSplatRoute
   '/note/$': typeof NoteSplatRoute
@@ -242,6 +278,7 @@ export interface FileRoutesById {
   '/brain/drill/$id': typeof BrainDrillIdRoute
   '/brain/studio/$lane': typeof BrainStudioLaneRoute
   '/speech/drill/$id': typeof SpeechDrillIdRoute
+  '/brain/challenge/$courseId/$challengeId': typeof BrainChallengeCourseIdChallengeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -256,7 +293,10 @@ export interface FileRouteTypes {
     | '/surprise'
     | '/watch'
     | '/archetypes/$slug'
+    | '/brain/copy'
+    | '/brain/fiction'
     | '/brain/history'
+    | '/brain/speech-course'
     | '/chat/$persona'
     | '/folder/$'
     | '/note/$'
@@ -271,6 +311,7 @@ export interface FileRouteTypes {
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
     | '/speech/drill/$id'
+    | '/brain/challenge/$courseId/$challengeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -283,7 +324,10 @@ export interface FileRouteTypes {
     | '/surprise'
     | '/watch'
     | '/archetypes/$slug'
+    | '/brain/copy'
+    | '/brain/fiction'
     | '/brain/history'
+    | '/brain/speech-course'
     | '/chat/$persona'
     | '/folder/$'
     | '/note/$'
@@ -298,6 +342,7 @@ export interface FileRouteTypes {
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
     | '/speech/drill/$id'
+    | '/brain/challenge/$courseId/$challengeId'
   id:
     | '__root__'
     | '/'
@@ -310,7 +355,10 @@ export interface FileRouteTypes {
     | '/surprise'
     | '/watch'
     | '/archetypes/$slug'
+    | '/brain/copy'
+    | '/brain/fiction'
     | '/brain/history'
+    | '/brain/speech-course'
     | '/chat/$persona'
     | '/folder/$'
     | '/note/$'
@@ -325,6 +373,7 @@ export interface FileRouteTypes {
     | '/brain/drill/$id'
     | '/brain/studio/$lane'
     | '/speech/drill/$id'
+    | '/brain/challenge/$courseId/$challengeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -338,7 +387,10 @@ export interface RootRouteChildren {
   SurpriseRoute: typeof SurpriseRoute
   WatchRoute: typeof WatchRoute
   ArchetypesSlugRoute: typeof ArchetypesSlugRoute
+  BrainCopyRoute: typeof BrainCopyRoute
+  BrainFictionRoute: typeof BrainFictionRoute
   BrainHistoryRoute: typeof BrainHistoryRoute
+  BrainSpeechCourseRoute: typeof BrainSpeechCourseRoute
   ChatPersonaRoute: typeof ChatPersonaRoute
   FolderSplatRoute: typeof FolderSplatRoute
   NoteSplatRoute: typeof NoteSplatRoute
@@ -353,6 +405,7 @@ export interface RootRouteChildren {
   BrainDrillIdRoute: typeof BrainDrillIdRoute
   BrainStudioLaneRoute: typeof BrainStudioLaneRoute
   SpeechDrillIdRoute: typeof SpeechDrillIdRoute
+  BrainChallengeCourseIdChallengeIdRoute: typeof BrainChallengeCourseIdChallengeIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -497,11 +550,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatPersonaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/brain/speech-course': {
+      id: '/brain/speech-course'
+      path: '/brain/speech-course'
+      fullPath: '/brain/speech-course'
+      preLoaderRoute: typeof BrainSpeechCourseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/brain/history': {
       id: '/brain/history'
       path: '/brain/history'
       fullPath: '/brain/history'
       preLoaderRoute: typeof BrainHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brain/fiction': {
+      id: '/brain/fiction'
+      path: '/brain/fiction'
+      fullPath: '/brain/fiction'
+      preLoaderRoute: typeof BrainFictionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brain/copy': {
+      id: '/brain/copy'
+      path: '/brain/copy'
+      fullPath: '/brain/copy'
+      preLoaderRoute: typeof BrainCopyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/archetypes/$slug': {
@@ -532,6 +606,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrainDrillIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/brain/challenge/$courseId/$challengeId': {
+      id: '/brain/challenge/$courseId/$challengeId'
+      path: '/brain/challenge/$courseId/$challengeId'
+      fullPath: '/brain/challenge/$courseId/$challengeId'
+      preLoaderRoute: typeof BrainChallengeCourseIdChallengeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -546,7 +627,10 @@ const rootRouteChildren: RootRouteChildren = {
   SurpriseRoute: SurpriseRoute,
   WatchRoute: WatchRoute,
   ArchetypesSlugRoute: ArchetypesSlugRoute,
+  BrainCopyRoute: BrainCopyRoute,
+  BrainFictionRoute: BrainFictionRoute,
   BrainHistoryRoute: BrainHistoryRoute,
+  BrainSpeechCourseRoute: BrainSpeechCourseRoute,
   ChatPersonaRoute: ChatPersonaRoute,
   FolderSplatRoute: FolderSplatRoute,
   NoteSplatRoute: NoteSplatRoute,
@@ -561,6 +645,8 @@ const rootRouteChildren: RootRouteChildren = {
   BrainDrillIdRoute: BrainDrillIdRoute,
   BrainStudioLaneRoute: BrainStudioLaneRoute,
   SpeechDrillIdRoute: SpeechDrillIdRoute,
+  BrainChallengeCourseIdChallengeIdRoute:
+    BrainChallengeCourseIdChallengeIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

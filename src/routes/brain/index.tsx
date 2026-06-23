@@ -1,126 +1,100 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useQuery } from '@tanstack/react-query';
-import { LargeTitle, ListGroup, Row, Card } from '@/ui/primitives';
+import { LargeTitle, Card } from '@/ui/primitives';
 import { Icon } from '@/ui/Icon';
-import { listGraded } from '@/features/writing-studio/history';
+import { COURSES, DOMAIN_LABELS } from '@/domain/courses';
 import { useStore } from '@/domain/store';
 
-export const Route = createFileRoute('/brain/')({ component: Train });
+export const Route = createFileRoute('/brain/')({ component: Ascension });
 
 /**
- * TRAIN — the doing tab.
- * Pure practice entry point: pick a lane, run a drill, get graded.
- * No vault browsing here (that's the Mind tab).
- * Tab label in the bottom nav says "Train" even though URL is /brain (legacy).
+ * ASCENSION — the training tab.
+ *
+ * 3 big domain cards: COPY · FICTION · SPEECH.
+ * Each opens its course page (a college-style curriculum with numbered
+ * modules and challenges).
+ *
+ * No more drill bank thrown at the user. Pick a domain → pick a module →
+ * run the next challenge in order.
  */
-function Train() {
-  const { data: graded } = useQuery({ queryKey: ['graded'], queryFn: listGraded });
+function Ascension() {
   const stats = useStore(s => s.stats);
-  const recentGrade = (graded ?? [])[0];
+  const challengeProgress = useStore(s => s.challengeProgress);
 
   return (
-    <div>
+    <div className="pb-12">
       <LargeTitle
-        title="Train"
-        subtitle={<span className="ios-subheadline" style={{ color: 'var(--label-secondary)' }}>Pick a lane. Write. Get graded.</span>}
+        title="Ascension"
+        subtitle={<span className="ios-subheadline" style={{ color: 'var(--label-secondary)' }}>3 domains · 9 modules · structured progression</span>}
       />
 
-      {/* Writing Studio lanes — the big primary action */}
-      <section className="px-4 mb-4">
+      {/* Stats strip — total challenges done */}
+      <section className="px-4 mb-6">
         <Card>
-          <div className="ios-footnote uppercase tracking-wide mb-3" style={{ color: 'var(--label-secondary)' }}>
-            Writing Studio
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <Lane lane="fiction"  emoji="✦" label="Fiction" hint="Meyer" />
-            <Lane lane="copy"     emoji="◆" label="Copy"    hint="Halbert" />
-            <Lane lane="freeform" emoji="●" label="Freeform" hint="Open" />
+          <div className="grid grid-cols-3">
+            <Stat label="Challenges" value={Object.keys(challengeProgress).length.toString()} />
+            <Stat label="Total XP"   value={fmtNum(stats.lifetimeXp)} />
+            <Stat label="Streak"     value={`${stats.currentStreak}d`} />
           </div>
         </Card>
       </section>
 
-      {/* Speech Gym — second primary action */}
-      <section className="px-4 mb-6">
-        <Link to="/speech">
-          <Card>
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-[11px] flex items-center justify-center"
-                   style={{ background: 'var(--orange)', color: 'white' }}>
-                <Icon name="sparkles" size={20} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="ios-footnote uppercase tracking-wide" style={{ color: 'var(--label-secondary)' }}>
-                  Speech Gym
+      {/* Domain cards */}
+      <section className="px-4 mb-6 space-y-3">
+        {COURSES.map(course => {
+          const totalChallenges = course.sets.reduce((s, set) => s + set.challenges.length, 0);
+          const doneChallenges = course.sets.reduce(
+            (s, set) => s + set.challenges.filter(c => challengeProgress[c.id]).length,
+            0,
+          );
+          const pct = totalChallenges > 0 ? Math.round((doneChallenges / totalChallenges) * 100) : 0;
+          const meta = DOMAIN_LABELS[course.domain];
+
+          return (
+            <Link key={course.id} to={course.domain === 'speech' ? '/brain/speech-course' : course.domain === 'copy' ? '/brain/copy' : '/brain/fiction'}>
+              <Card>
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-[12px] flex items-center justify-center text-2xl"
+                       style={{ background: 'var(--fill-tertiary)' }}>
+                    {meta.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="ios-footnote uppercase tracking-wide" style={{ color: 'var(--label-secondary)' }}>{meta.name}</div>
+                    <div className="ios-title-3" style={{ color: 'var(--label)' }}>{course.name}</div>
+                    <div className="ios-footnote mt-0.5" style={{ color: 'var(--label-secondary)' }}>{course.byline}</div>
+                  </div>
+                  <Icon name="chevron-right" size={16} />
                 </div>
-                <div className="ios-headline" style={{ color: 'var(--label)' }}>Train articulate speech</div>
-              </div>
-              <Icon name="chevron-right" size={16} />
-            </div>
-          </Card>
-        </Link>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--fill-tertiary)' }}>
+                    <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'var(--tint)' }} />
+                  </div>
+                  <div className="ios-caption-1 font-mono" style={{ color: 'var(--label-secondary)' }}>
+                    {doneChallenges} / {totalChallenges}
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          );
+        })}
       </section>
 
-      {/* Bootcamps — read the note OR chat with the author */}
-      <ListGroup header="Author bootcamps" footer="Read the bootcamp · or chat with the author for live coaching.">
-        <Link to="/note/$" params={{ _splat: '01-CRAFT/writing/authors/gary-halbert.md' }}>
-          <Row leading={<TileIcon name="flame" color="var(--red)" />}    title="Halbert — read"    subtitle="Copy bootcamp + signature rubric" chevron />
-        </Link>
-        <Link to="/chat/$persona" params={{ persona: 'halbert' }} search={{ name: undefined }}>
-          <Row leading={<TileIcon name="brain" color="var(--red)" />}    title="Chat with Halbert" subtitle="Live coaching in his voice" chevron />
-        </Link>
-        <Link to="/note/$" params={{ _splat: '01-CRAFT/writing/authors/stephenie-meyer.md' }}>
-          <Row leading={<TileIcon name="book" color="var(--purple)" />}  title="Meyer — read" subtitle="Fiction bootcamp + signature rubric" chevron />
-        </Link>
-        <Link to="/chat/$persona" params={{ persona: 'meyer' }} search={{ name: undefined }}>
-          <Row leading={<TileIcon name="brain" color="var(--purple)" />} title="Chat with Meyer" subtitle="Live coaching on interiority + craft" chevron />
-        </Link>
-      </ListGroup>
-
-      {/* Latest grade — single tile, "see all" leads to history */}
-      <ListGroup header={`Last grade · ${stats.drillsCompleted} total`}>
-        {recentGrade ? (
-          <Link to="/note/$" params={{ _splat: recentGrade.path }}>
-            <Row
-              leading={
-                <div className="w-10 h-10 rounded-[8px] flex flex-col items-center justify-center"
-                     style={{ background: 'var(--tint)', color: 'white' }}>
-                  <span className="ios-headline font-mono leading-none">{recentGrade.total}</span>
-                  <span className="ios-caption-2 leading-none mt-0.5">/{recentGrade.max}</span>
-                </div>
-              }
-              title={recentGrade.drill}
-              subtitle={`${recentGrade.date} · ${recentGrade.lane}`}
-              chevron
-            />
-          </Link>
-        ) : (
-          <Row title="No grades yet" subtitle="Submit a drill — score lands here" />
-        )}
-        <Link to="/brain/history">
-          <Row leading={<TileIcon name="doc-text" color="var(--gray)" />} title="All grades" subtitle="Score history + sparkline" chevron />
-        </Link>
-      </ListGroup>
-    </div>
-  );
-}
-
-function Lane({ lane, emoji, label, hint }: { lane: 'fiction' | 'copy' | 'freeform'; emoji: string; label: string; hint: string }) {
-  return (
-    <Link to="/brain/studio/$lane" params={{ lane }}>
-      <div className="rounded-[12px] py-4 flex flex-col items-center gap-1 active:scale-[0.97] transition-transform"
-           style={{ background: 'var(--fill-tertiary)' }}>
-        <div className="text-2xl leading-none" style={{ color: 'var(--label)' }}>{emoji}</div>
-        <div className="ios-footnote font-semibold" style={{ color: 'var(--label)' }}>{label}</div>
-        <div className="ios-caption-2" style={{ color: 'var(--label-secondary)' }}>{hint}</div>
+      <div className="px-4 ios-footnote" style={{ color: 'var(--label-secondary)' }}>
+        Each domain is a course. Each course has modules. Each module has numbered challenges. Complete in order or jump around — XP flows either way.
       </div>
-    </Link>
+    </div>
   );
 }
 
-function TileIcon({ name, color }: { name: any; color: string }) {
+function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="w-9 h-9 rounded-[9px] flex items-center justify-center" style={{ background: color, color: 'white' }}>
-      <Icon name={name} size={18} />
+    <div className="text-center">
+      <div className="ios-title-3" style={{ color: 'var(--label)' }}>{value}</div>
+      <div className="ios-caption-2 mt-0.5" style={{ color: 'var(--label-secondary)' }}>{label}</div>
     </div>
   );
+}
+function fmtNum(n: number) {
+  if (n >= 10_000) return Math.floor(n / 1000) + 'k';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+  return String(n);
 }

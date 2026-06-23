@@ -13,12 +13,14 @@ export const Route = createRootRouteWithContext<RouterCtx>()({
 
 // Tab bar — 5 verbs, one job each.
 // URLs are legacy on /brain (it's now labeled Train); everything else maps cleanly.
+// Tab bar — verbs, one job each.
+// /brain URL is legacy (kept to avoid breaking deep links); label is "Ascension".
 const TABS = [
-  { to: '/',         label: 'Today',   icon: 'sparkles'      },
-  { to: '/brain',    label: 'Train',   icon: 'pencil'        },
-  { to: '/mind',     label: 'Mind',    icon: 'brain'         },
-  { to: '/library',  label: 'Library', icon: 'book'          },
-  { to: '/me',       label: 'Me',      icon: 'circle-person' },
+  { to: '/',         label: 'To Do',     icon: 'checklist'     },
+  { to: '/brain',    label: 'Ascension', icon: 'arrow-up'      },
+  { to: '/mind',     label: 'Mind',      icon: 'brain'         },
+  { to: '/library',  label: 'Library',   icon: 'book'          },
+  { to: '/me',       label: 'Me',        icon: 'circle-person' },
 ] as const;
 
 function RootLayout() {

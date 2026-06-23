@@ -42,6 +42,8 @@ interface SovereignState {
   speechProgress: { [drillId: string]: number };
   /** Last date the user completed any speech drill — for streak math. */
   speechLastDate: string | null;
+  /** Course challenge completion: { challengeId -> { count, lastAt } } */
+  challengeProgress: { [challengeId: string]: { count: number; lastAt: string } };
   customTasks: CustomTask[];
   /** Keyed by `periodKey(scope)` like 'd-2026-06-17', 'w-2026-W25', 'm-2026-06'. */
   customTaskChecks: { [periodKey: string]: { [taskId: string]: boolean } };
@@ -64,6 +66,9 @@ interface SovereignState {
   tasksOfScope: (scope: TaskScope) => CustomTask[];
   /** Speech drill completion — also awards XP to Leader. */
   completeSpeechDrill: (drillId: string, xp?: number) => void;
+  /** Mark a course challenge done. Awards XP to the named archetype. */
+  completeChallenge: (challengeId: string, xp: number, archetype: ArchetypeSlug) => void;
+  isChallengeDone: (challengeId: string) => boolean;
 }
 
 const EMPTY_TASK_CHECKS: { [taskId: string]: boolean } = Object.freeze({});
@@ -72,7 +77,7 @@ const initial = (): Omit<SovereignState,
   | 'toggleMission' | 'isMissionDone' | 'todayMissions' | 'todayChecks'
   | 'awardDrillCompletion' | 'tickActivity' | 'recordVoltage' | 'resetAll'
   | 'addCustomTask' | 'removeCustomTask' | 'toggleCustomTask' | 'isCustomTaskDone' | 'tasksOfScope'
-  | 'completeSpeechDrill'
+  | 'completeSpeechDrill' | 'completeChallenge' | 'isChallengeDone'
 > => ({
   profile: { name: 'Zatreides', joinedAt: todayKey() },
   missionChecks: {},
@@ -81,6 +86,7 @@ const initial = (): Omit<SovereignState,
   voltageLog: [],
   speechProgress: {},
   speechLastDate: null,
+  challengeProgress: {},
   customTasks: [],
   customTaskChecks: {},
 });
@@ -234,6 +240,30 @@ export const useStore = create<SovereignState>()(
         }));
         get().tickActivity();
       },
+
+      completeChallenge: (challengeId, xp, archetype) => {
+        const today = todayKey();
+        const wasDone = !!get().challengeProgress[challengeId];
+        set((s) => ({
+          challengeProgress: {
+            ...s.challengeProgress,
+            [challengeId]: {
+              count: (s.challengeProgress[challengeId]?.count ?? 0) + 1,
+              lastAt: today,
+            },
+          },
+          archetypeXp: { ...s.archetypeXp, [archetype]: (s.archetypeXp[archetype] ?? 0) + xp },
+          stats: {
+            ...s.stats,
+            lifetimeXp: s.stats.lifetimeXp + xp,
+            // Only count toward drillsCompleted on first completion (avoid double-counting on re-runs).
+            drillsCompleted: s.stats.drillsCompleted + (wasDone ? 0 : 1),
+          },
+        }));
+        get().tickActivity();
+      },
+
+      isChallengeDone: (challengeId) => !!get().challengeProgress[challengeId],
     }),
     {
       name: 'sovereign.store.v1',
@@ -246,6 +276,7 @@ export const useStore = create<SovereignState>()(
         voltageLog: s.voltageLog,
         speechProgress: s.speechProgress,
         speechLastDate: s.speechLastDate,
+        challengeProgress: s.challengeProgress,
         customTasks: s.customTasks,
         customTaskChecks: s.customTaskChecks,
       }),
